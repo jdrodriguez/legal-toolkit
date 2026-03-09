@@ -36,7 +36,7 @@ python3 "$SKILL_DIR/scripts/check_dependencies.py"
 ### Step 3: Run Records Researcher
 
 ```bash
-WORK_DIR="/tmp/legal-records-$(date +%s)"
+WORK_DIR="$(pwd)/legal-records-$(date +%s)"
 mkdir -p "$WORK_DIR"
 ```
 

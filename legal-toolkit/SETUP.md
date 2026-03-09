@@ -23,11 +23,18 @@ Speaker diarization uses the [pyannote/speaker-diarization-3.1](https://huggingf
 1. Go to [huggingface.co/join](https://huggingface.co/join)
 2. Sign up (free)
 
-### Step 2: Accept the Model License
+### Step 2: Accept the Model Licenses (Required)
 
-1. Go to [huggingface.co/pyannote/speaker-diarization-3.1](https://huggingface.co/pyannote/speaker-diarization-3.1)
-2. Click "Agree and access repository" (you must be logged in)
-3. Also accept the license for [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0)
+> **This step is critical.** Even with a valid token, diarization will fail with a 403 error if you skip this. You must accept the license on **both** model pages — they are gated repositories.
+
+1. Go to [pyannote/speaker-diarization-3.1](https://huggingface.co/pyannote/speaker-diarization-3.1)
+   - Click **"Agree and access repository"** (you must be logged in)
+2. Go to [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0)
+   - Click **"Agree and access repository"**
+3. Go to [pyannote/speaker-diarization-community-1](https://huggingface.co/pyannote/speaker-diarization-community-1)
+   - Click **"Agree and access repository"** (used internally for speaker embedding scoring)
+
+All three must be accepted with the **same account** that generated your access token.
 
 ### Step 3: Create an Access Token
 
@@ -72,7 +79,10 @@ Run the transcribe skill on any recording. If diarization is working, you'll see
 - Speaker labels (SPEAKER_00, SPEAKER_01, etc.) in the transcript
 - A "Speaker Statistics" table in the final document
 
-If you see "No HuggingFace token found" in the logs, double-check Step 4.
+**Troubleshooting:**
+- "No HuggingFace token found" → double-check Step 4.
+- "403 Client Error" / "Cannot access gated repo" → you haven't accepted the model licenses in Step 2. Visit both links and click "Agree and access repository."
+- "401 Unauthorized" → your token is invalid or expired. Generate a new one in Step 3.
 
 ## Other Skills
 
