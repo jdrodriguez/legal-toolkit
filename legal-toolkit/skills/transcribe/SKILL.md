@@ -5,7 +5,12 @@ description: "Transcribe audio or video recordings into professional Word docume
 
 # Legal Transcriber
 
-Transcribe recordings using the `legal-transcriber` MCP server. All processing is 100% local — no audio data leaves the machine. Follow these steps in order.
+Transcribe recordings using the local Whisper AI model. All processing is 100% local — no audio data leaves the machine. Follow these steps in order.
+
+## Skill Directory
+
+Scripts are in the `scripts/` subdirectory of this skill's directory.
+Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
 ## Step 1: Validate
 
@@ -13,41 +18,45 @@ Confirm the user gave a path to an audio/video file. Supported: `.wav`, `.mp3`, 
 
 ## Step 2: Check Dependencies
 
-Call the `check_dependencies` MCP tool.
+```bash
+python3 "$SKILL_DIR/scripts/check_dependencies.py"
+```
 
+Parse the JSON output:
 - If `status` is `"ok"`:
   - Check if `pyannote.available` is true AND `hf_token_found` is true → speaker diarization will work. **Proceed to Step 3.**
   - If `pyannote.available` is false OR `hf_token_found` is false → transcription will work but **without speaker labels**. Tell the user:
-    > "Transcription will work, but speaker identification is not available. To enable it, follow the setup guide in SETUP.md (requires a free HuggingFace account and token). Want to proceed without speaker labels, or set that up first?"
-  - If the user wants to proceed without speakers, continue normally. The worker handles this gracefully.
-- If `status` is `"missing_dependencies"` — tell the user: "The Legal Transcriber is not set up. Please double-click 'Install Legal Transcriber.command' to install, then restart Claude Desktop."
-- If the MCP tool call **fails or errors** — tell the user: "The legal-transcriber MCP server is not running. Please re-run the installer and restart Claude Desktop."
+    > "Transcription will work, but speaker identification is not available. To enable it, you need a free HuggingFace account and token. Want to proceed without speaker labels, or set that up first?"
+  - If the user wants to proceed without speakers, continue normally. The script handles this gracefully.
+- If `status` is `"missing_dependencies"` — tell the user what's missing and offer to install.
+- If the script **fails** — report the error.
 
 ## Step 3: Prepare Model
 
-The model is selected automatically based on recording duration:
-- **< 30 minutes**: `small` (~466 MB) — good balance of speed and accuracy
-- **30+ minutes**: `medium` (~1.5 GB) — better accuracy for longer recordings
+Check if the Whisper model is already cached:
 
-If the user explicitly requests a specific model, use that instead.
+```bash
+ls -d ~/.cache/huggingface/hub/models--Systran--faster-whisper-medium/snapshots 2>/dev/null && echo "cached" || echo "not_cached"
+```
 
-Call the `prepare_model` MCP tool with the expected model (default `"medium"` if unknown, or `"small"` if the user mentions a short recording).
-- If `status: "ready"` — model is cached, proceed.
-- If `status: "not_cached"` — tell the user the model will download during transcription (first run only).
-
-**If either MCP tool fails or is unavailable**, tell the user: "The legal-transcriber MCP server is not running. Please re-run the installer and restart Claude Desktop."
+- If cached: model is ready, proceed.
+- If not cached: tell the user the model will download during transcription (first run only, ~1.5 GB).
 
 ## Step 3.5: Resolve File Path
 
-**Important:** The MCP server runs on the host Mac, not inside Cowork's VM. File paths may differ.
+**Important:** File paths may need resolution (~ expansion, relative paths, etc.).
 
-Call the `resolve_path` MCP tool with the user's file path.
-- If `status: "found"` — use the `resolved_path` as the `input_file` for all subsequent steps.
-- If `status: "not_found"` — ask the user for the full macOS path (e.g. `/Users/name/Downloads/file.mp4`).
+```bash
+python3 "$SKILL_DIR/scripts/resolve_path.py" "<user_file_path>"
+```
 
-## Step 4: Transcribe (Async with Polling)
+Parse the JSON output:
+- If `status` is `"found"` — use the `resolved_path` as the input file for all subsequent steps.
+- If `status` is `"not_found"` — ask the user for the full path (e.g. `/Users/name/Downloads/file.mp4`).
 
-Set `work_dir` to `{parent_dir}/{filename_without_ext}_transcript_work` (using the **resolved** parent dir from Step 3.5).
+## Step 4: Transcribe (Background + Polling)
+
+Set `WORK_DIR` to `{parent_dir}/{filename_without_ext}_transcript_work` (using the **resolved** parent dir from Step 3.5).
 
 1. **Before starting**, tell the user:
 
@@ -57,44 +66,63 @@ Set `work_dir` to `{parent_dir}/{filename_without_ext}_transcript_work` (using t
    > - Your computer's fans may spin up — that's completely normal.
    > - I'll give you regular progress updates so you always know where things stand.
 
-2. Call `transcribe_audio` MCP tool with the **resolved** `input_file` path, `work_dir`, `model: "auto"`, `language: "auto"`. **Do NOT pass `no_diarize: true`** — diarization should be attempted by default since speaker identification is core to the deliverable. The worker will gracefully fall back if pyannote is unavailable. Only pass `no_diarize: true` if the user explicitly asks to skip speaker detection. Pass other user preferences if given (language, max_speakers). This returns immediately with a `job_id`.
+2. **Launch transcription in background:**
+
+```bash
+mkdir -p "$WORK_DIR"
+nohup python3 "$SKILL_DIR/scripts/transcribe_audio.py" \
+  "<resolved_input_file>" "$WORK_DIR" \
+  --model auto --language auto \
+  > "$WORK_DIR/worker_stdout.log" 2>"$WORK_DIR/worker_stderr.log" &
+echo $!
+```
+
+Capture the PID from the `echo $!` output. If the user explicitly asked to skip speaker detection, add `--no-diarize`. If user specified `--max-speakers N`, add that flag too.
 
 3. Tell the user: "Transcription started! Monitoring progress..."
 
-4. **Polling loop** — call `check_transcription_status` MCP tool with the `job_id` every **10 seconds**. **You MUST give the user a status update on every single poll** — never poll silently. Use friendly, varied messages so the user knows things are progressing:
+4. **Polling loop** — Read `$WORK_DIR/status.json` using the Read tool every **10 seconds**. **You MUST give the user a status update on every single poll** — never poll silently. Use friendly, varied messages so the user knows things are progressing:
 
-   - If `status: "running"`:
+   - If the file doesn't exist yet or `status` is `"starting"`:
+     - "Starting up the transcription engine..."
+     - If this persists for >3 polls, say: "The engine is still initializing — this can take a moment on first run."
+
+   - If `status` is `"running"`:
      - **Always report** the `stage` and `progress` percentage with a brief message
-     - Use the `stage` field to give context. Map stages to user-friendly descriptions:
+     - Map stages to user-friendly descriptions:
        - `"extracting_audio"` → "Extracting audio from video file..."
        - `"loading_model"` → "Loading the Whisper AI model..."
        - `"transcribing"` → "Transcribing audio... {progress}% complete"
        - `"diarizing"` → "Identifying speakers..."
        - `"writing_outputs"` → "Almost done — writing transcript files..."
-     - Include the `message` field if it has useful detail (e.g., segment counts)
+     - Include the `message` field if it has useful detail
      - For long transcriptions (>3 polls at the same stage), add reassurance: "Still working — this is normal for longer recordings."
-     - Wait 10 seconds, then poll again.
 
-   - If `status: "pending"` — tell the user: "Starting up the transcription engine..." Wait 10 seconds and poll again. If pending for >3 polls, say: "The engine is still initializing — this can take a moment on first run."
+   - If `status` is `"completed"`:
+     - Tell the user: "Transcription complete!" and proceed to Step 5.
 
-   - If `status: "completed"` — tell the user: "Transcription complete!" and proceed to Step 5.
+   - If `status` is `"error"`:
+     - Report the `error` message to the user and stop.
 
-   - If `status: "error"` — report the error message to the user and stop.
+   - To verify the process is still alive (if status seems stale):
+     ```bash
+     kill -0 <PID> 2>/dev/null; echo $?
+     ```
+     Exit 0 = alive, non-zero = dead. If dead but status.json doesn't show completed/error, check `$WORK_DIR/worker_stderr.log` for crash details.
 
-5. Once completed, read `work_dir/metadata.json`.
+5. Once completed, proceed to Step 5.
 
 ## Step 5: Analyze Transcript
 
-Read `work_dir/metadata.json` for duration, language, speakers, etc. Then determine the transcript size:
+Read `$WORK_DIR/metadata.json` for duration, language, speakers, etc. Then determine the transcript size:
 
-Run a quick Bash command to count lines:
 ```bash
-wc -l < "{work_dir}/transcript.txt"
+wc -l < "$WORK_DIR/transcript.txt"
 ```
 
 ### Small transcript (500 lines or fewer)
 
-Read the entire `work_dir/transcript.txt` directly. Proceed to Step 6 with the full transcript in context.
+Read the entire `$WORK_DIR/transcript.txt` directly. Proceed to Step 6 with the full transcript in context.
 
 ### Large transcript (more than 500 lines)
 
@@ -106,10 +134,10 @@ The transcript is too large for a single context window. Use **parallel agents**
 
 2. **Create analysis directory:**
    ```bash
-   mkdir -p "{work_dir}/analysis"
+   mkdir -p "$WORK_DIR/analysis"
    ```
 
-3. **Spawn agents in parallel** — launch all agents at once using the Task tool (`subagent_type: "general-purpose"`). Each agent's prompt:
+3. **Spawn agents in parallel** — launch all agents at once using the Agent tool (`subagent_type: "general-purpose"`). Each agent's prompt:
 
    ```
    You are analyzing a section of a transcript file.
@@ -138,7 +166,7 @@ The transcript is too large for a single context window. Use **parallel agents**
    - "[Exact quote]" — Speaker (timestamp)
    ```
 
-4. **Wait for all agents to complete**, then read all `{work_dir}/analysis/section_*.md` files.
+4. **Wait for all agents to complete**, then read all `$WORK_DIR/analysis/section_*.md` files.
 
 5. **Synthesize** — combine the agent outputs into a unified analysis:
    - Merge all section summaries into a cohesive Executive Summary (2-3 paragraphs)
@@ -150,15 +178,28 @@ Proceed to Step 6 with the synthesized analysis.
 
 ## Step 6: Create Document
 
-Call the `create_document` MCP tool with:
-- `work_dir`: the transcript work directory path
-- `output_path`: `{parent_dir}/{filename_without_ext}_transcript.docx` (same folder as the original recording)
-- `executive_summary`: your 2-3 paragraph executive summary
-- `key_topics`: JSON array of topic strings, e.g. `'["Topic 1", "Topic 2"]'`
-- `action_items`: JSON array of action item strings (pass `'[]'` if none)
-- `notable_quotes`: JSON array of 5-10 significant quote strings with speaker attribution
+First, write the analysis to a JSON file using the Write tool:
 
-The `create_document` MCP tool reads transcript.txt and metadata.json from the work directory and generates a professional .docx with:
+Write to `$WORK_DIR/analysis.json`:
+```json
+{
+  "executive_summary": "Your 2-3 paragraph executive summary here",
+  "key_topics": ["Topic 1", "Topic 2"],
+  "action_items": ["Action item 1", "Action item 2"],
+  "notable_quotes": ["\"Quote\" — Speaker (timestamp)"]
+}
+```
+
+Then generate the document:
+
+```bash
+python3 "$SKILL_DIR/scripts/create_document.py" \
+  "$WORK_DIR" \
+  "{parent_dir}/{filename_without_ext}_transcript.docx" \
+  --analysis "$WORK_DIR/analysis.json"
+```
+
+The script reads transcript.txt and metadata.json from the work directory and generates a professional .docx with:
 1. Title page with filename
 2. Metadata table (duration, language, model, speakers, word count, date)
 3. Executive Summary
@@ -168,4 +209,4 @@ The `create_document` MCP tool reads transcript.txt and metadata.json from the w
 7. Full Transcript with timestamps and speaker labels
 8. Notable Quotes
 
-If the tool returns `status: "ok"`, tell the user where the document was saved. If it returns an error, report it.
+If the script succeeds, tell the user where the document was saved. If it fails, report the error.

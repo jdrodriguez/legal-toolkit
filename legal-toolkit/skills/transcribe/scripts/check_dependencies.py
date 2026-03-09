@@ -20,6 +20,7 @@ PYTHON_DEPS = {
     "faster_whisper": "faster-whisper",
     "pydub": "pydub",
     "audioop": "audioop-lts",
+    "docx": "python-docx",
 }
 
 OPTIONAL_DEPS = {

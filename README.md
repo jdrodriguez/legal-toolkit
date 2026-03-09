@@ -1,6 +1,8 @@
-# Document Summarizer
+# Legal Toolkit
 
-A Claude Code plugin that takes large documents (PDF, DOCX, TXT, Markdown) or entire folders of mixed documents and produces a professional summary report as a Word (.docx) file. It automatically splits documents into manageable chunks, coordinates multiple AI agents to summarize sections in parallel, and assembles everything into a single unified report with an executive summary, document structure outline, and section-by-section breakdowns.
+A Claude Code plugin with 31 legal productivity skills -- document processing, criminal defense workflows, firm operations, and client management. Covers everything from document summarization and audio transcription to motion drafting, intake call scoring, case strategy playbooks, and attorney workload analysis.
+
+All processing is 100% local -- no data leaves your machine.
 
 Works with both **Claude Code** (CLI) and **Claude Desktop / Cowork**.
 
@@ -8,47 +10,34 @@ Works with both **Claude Code** (CLI) and **Claude Desktop / Cowork**.
 
 ### Claude Code (CLI)
 
-You need these installed on your machine:
+1. **Node.js** (v18+) -- for generating Word documents
+2. **Python 3** (v3.9+) -- for document processing, transcription, OCR, and analysis
+3. **ffmpeg** (optional) -- for audio/video transcription and deposition indexing
 
-1. **Node.js** (v18+) — for generating the final Word document
-2. **Python 3** (v3.9+) — for document text extraction and chunking
-3. **Poppler** (optional) — provides `pdftotext` as a fallback PDF extractor
-
-The plugin will auto-install Python packages (`pdfplumber`, `PyMuPDF`, `python-docx`) and npm packages (`docx`) on first run.
+Dependencies are auto-installed on first use of each skill.
 
 #### macOS (with Homebrew)
 
 ```bash
-brew install node python3 poppler
-```
-
-If you don't have Homebrew, install it first:
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install node python3 ffmpeg
 ```
 
 #### Windows
 
 - **Node.js**: Download from https://nodejs.org (LTS version). Check "Add to PATH" during install.
 - **Python 3**: Download from https://www.python.org/downloads/. Check "Add Python to PATH" during install.
-- **Poppler** (optional): Download from https://github.com/ossamamehmood/Poppler/releases and add the `bin/` folder to your system PATH.
+- **ffmpeg**: Download from https://ffmpeg.org/download.html and add the `bin/` folder to your system PATH.
 
 #### Linux (Ubuntu/Debian)
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs python3 python3-pip poppler-utils
-```
-
-Verify your setup:
-```bash
-node --version     # v18+ required
-python3 --version  # 3.9+ required
+sudo apt-get install -y nodejs python3 python3-pip ffmpeg poppler-utils
 ```
 
 ### Claude Desktop / Cowork
 
-No prerequisites needed. Cowork's VM has Python and Node.js pre-installed. All dependencies are auto-installed on first run.
+No prerequisites needed. Cowork's VM has Python and Node.js pre-installed. Dependencies are auto-installed on first run.
 
 ## Installing the Plugin
 
@@ -64,107 +53,174 @@ Or clone and use locally:
 
 ```bash
 git clone https://github.com/jdrodriguez/legal-toolkit.git
-claude --plugin-dir /path/to/document-summarizer/document-summarizer
+claude --plugin-dir /path/to/legal-toolkit
 ```
 
 ### Option B: Claude Desktop / Cowork
 
-1. Download [`document-summarizer.zip`](document-summarizer.zip) from this repository
+1. Download the plugin zip from this repository
 2. Open Claude Desktop and start a Cowork session
 3. Drag and drop the `.zip` file into the chat
 4. Claude will install the plugin automatically
-
-> **Note**: The standard marketplace install may not work in Cowork due to a known filesystem issue. The zip upload method is the reliable workaround.
 
 ### Verify the installation
 
 Type this in Claude Code or Cowork:
 ```
-/document-summarizer:summarize
+/legal-toolkit:summarize
 ```
 
 If Claude recognizes the command, you're all set.
 
-## Usage
+## Available Skills
 
-Ask Claude to summarize a document by providing the file path:
+### Document Processing
+
+| Command | Description |
+|---------|-------------|
+| `/legal-toolkit:summarize` | Summarize documents (PDF, DOCX, TXT, Markdown) into professional Word reports |
+| `/legal-toolkit:transcribe` | Transcribe audio/video recordings with timestamps and speaker labels |
+| `/legal-toolkit:ocr` | OCR scanned PDFs and images (PaddleOCR + Tesseract) |
+| `/legal-toolkit:compare-documents` | Compare documents with visual diff heatmaps |
+| `/legal-toolkit:redline` | Generate tracked-changes redlines between document versions |
+
+### Litigation & Case Work
+
+| Command | Description |
+|---------|-------------|
+| `/legal-toolkit:calculate-deadlines` | Calculate court deadlines (FRCP Rule 6, state rules, .ics export) |
+| `/legal-toolkit:build-chronology` | Build case chronologies from documents |
+| `/legal-toolkit:index-deposition` | Index deposition video/audio recordings |
+| `/legal-toolkit:map-entities` | NLP entity extraction and relationship mapping |
+| `/legal-toolkit:analyze-photos` | Evidence photo EXIF/GPS analysis |
+| `/legal-toolkit:analyze-video` | Forensic video frame analysis |
+| `/legal-toolkit:search-records` | SEC EDGAR public filings research |
+
+### Criminal Defense
+
+| Command | Description |
+|---------|-------------|
+| `/legal-toolkit:analyze-discovery` | Analyze discovery packages with NHTSA cross-reference and defense memo |
+| `/legal-toolkit:draft-motion` | Draft motions (suppress, dismiss, exclude, limine, compel, sentencing) |
+| `/legal-toolkit:build-case-playbook` | Generate defense strategy playbook from case files |
+
+### E-Discovery & Financial Analysis
+
+| Command | Description |
+|---------|-------------|
+| `/legal-toolkit:process-emails` | E-discovery email processing |
+| `/legal-toolkit:analyze-communications` | Communication pattern analysis |
+| `/legal-toolkit:audit-billing` | Billing data audit (LEDES, Excel, CSV) |
+| `/legal-toolkit:analyze-financials` | Forensic financial analysis |
+
+### Intake & Client Management
+
+| Command | Description |
+|---------|-------------|
+| `/legal-toolkit:process-intake` | Client intake processing |
+| `/legal-toolkit:score-intake` | Score intake calls against coaching rubric (accepts audio or text) |
+| `/legal-toolkit:build-intake-script` | Build adaptive intake call scripts with branching logic |
+| `/legal-toolkit:build-objection-playbook` | Generate objection handling playbook from call recordings |
+| `/legal-toolkit:calculate-pricing` | Calculate case retainer ranges with payment plan options |
+| `/legal-toolkit:request-reviews` | Generate client review request scripts and timing strategy |
+| `/legal-toolkit:map-client-journey` | Map and optimize the client experience journey |
+| `/legal-toolkit:design-comm-cadence` | Design client communication calendars and templates |
+
+### Firm Operations
+
+| Command | Description |
+|---------|-------------|
+| `/legal-toolkit:multiply-content` | Multiply one piece of content into 12+ platform-native outputs |
+| `/legal-toolkit:surface-performance` | Surface firm KPIs from case data exports |
+| `/legal-toolkit:analyze-workload` | Analyze attorney caseload capacity and redistribution |
+| `/legal-toolkit:model-decision` | Structured decision analysis for firm owners |
+
+## Usage Examples
+
+### Summarize a document
 
 ```
 Summarize /path/to/my-report.pdf
 ```
 
-Or point it at a folder of documents:
+Or point it at a folder:
 
 ```
 Summarize everything in /path/to/contracts/
 ```
 
-Other ways to trigger the plugin:
+### Transcribe a recording
 
 ```
-Give me an executive summary of /path/to/document.docx
-What does /path/to/policy.pdf say?
-Analyze the reports in /path/to/quarterly-reports/
+Transcribe /path/to/meeting-recording.mp3
 ```
 
-You can also invoke it directly:
+The transcriber runs locally using faster-whisper. It launches as a background process and provides progress updates as it works. Output is a professional .docx with:
+- Metadata table (duration, language, model, speakers)
+- Executive summary and key topics
+- Full timestamped transcript with speaker labels
+- Speaker statistics and notable quotes
+
+Optional speaker diarization requires [pyannote.audio](https://github.com/pyannote/pyannote-audio) and a free [HuggingFace token](https://huggingface.co/settings/tokens).
+
+### Calculate court deadlines
 
 ```
-/document-summarizer:summarize /path/to/file.pdf
+Calculate deadlines from a complaint filed today in California Superior Court
 ```
 
-For large documents, Claude coordinates a team of agents that work in parallel. You'll see progress as each agent finishes its assigned sections.
+### OCR a scanned document
 
-## What You Get
+```
+OCR /path/to/scanned-contract.pdf
+```
 
-After processing, you'll find these files **in the same folder as your original document**:
+## Output
 
-| File | Description |
-|------|-------------|
-| `{filename}_summary.docx` | Professional Word document with executive summary, TOC, section breakdowns, key findings |
-| `{filename}_summary_work/` | Working directory with intermediate files (chunks, agent summaries, metadata) |
+Each skill produces output files **in the same folder as your input document**:
 
-The `_summary_work/` folder contains:
-- `metadata.json` — document structure, chunk info, and token counts
-- `chunks/` — the individual text chunks extracted from your document
-- `summaries/` — each agent's raw summary output before final assembly
-- `final_summary.md` — plain-text Markdown version of the summary
-
-For directory input, the output is named `Summary_{foldername}.docx` and the work directory is `_summary_work/` inside the source folder.
-
-> **Need a PDF?** Open the `.docx` in Word or Google Docs and export to PDF.
+| Skill | Output |
+|-------|--------|
+| Summarize | `{filename}_summary.docx` + `_summary_work/` directory |
+| Transcribe | `{filename}_transcript.docx` + `_transcript_work/` directory |
+| OCR | `{filename}_ocr.txt` or `.docx` |
+| Redline | `{filename}_redline.docx` |
+| Other skills | Varies -- each skill reports its output location |
 
 ## Supported File Types
 
-| Format | Extension | Notes |
-|--------|-----------|-------|
-| PDF | `.pdf` | Text-based PDFs. Scanned/image-only PDFs need OCR first. |
-| Word | `.docx` | Modern Word format. Old `.doc` files are not supported. |
-| Plain text | `.txt` | Any plain text file. |
-| Markdown | `.md` | Markdown files. |
+| Format | Extension | Skills |
+|--------|-----------|--------|
+| PDF | `.pdf` | summarize, ocr, compare-documents, redline |
+| Word | `.docx` | summarize, compare-documents, redline |
+| Plain text | `.txt`, `.md` | summarize |
+| Audio | `.mp3`, `.wav`, `.m4a`, `.flac`, `.ogg`, `.wma`, `.aac` | transcribe, index-deposition |
+| Video | `.mp4`, `.mov`, `.avi`, `.mkv`, `.webm` | transcribe, index-deposition |
+| Images | `.jpg`, `.png`, `.tiff`, `.bmp` | ocr, analyze-photos |
+| Email | `.eml`, `.msg`, `.mbox` | process-emails |
+| Spreadsheets | `.csv`, `.xlsx` | audit-billing, analyze-financials, surface-performance, analyze-workload |
 
 ## Troubleshooting
 
 ### "command not found: node" or "command not found: python3"
 
-Your PATH isn't set up correctly. Close and reopen your terminal. If that doesn't help:
+Close and reopen your terminal. If that doesn't help:
 
 **macOS/Linux**: Add this to your `~/.zshrc` or `~/.bashrc`:
 ```bash
 export PATH="/usr/local/bin:$PATH"
 ```
-Then run `source ~/.zshrc` (or `~/.bashrc`).
+Then run `source ~/.zshrc`.
 
-**Windows**: Reinstall Node.js/Python and make sure to check "Add to PATH" during installation.
+**Windows**: Reinstall Node.js/Python and check "Add to PATH" during installation.
 
 ### "Cannot find module 'docx'"
 
-The npm package isn't installed. The plugin auto-installs it, but you can also run manually:
 ```bash
 npm install -g docx
 ```
 
-If the error persists, your Node.js global modules path may not be in NODE_PATH:
+If the error persists:
 ```bash
 export NODE_PATH=$(npm root -g)
 ```
@@ -172,27 +228,47 @@ Add that line to your `~/.zshrc` or `~/.bashrc` to make it permanent.
 
 ### Python import errors
 
-The plugin auto-installs Python dependencies. To install manually:
+Dependencies auto-install on first use. To install manually:
 ```bash
-pip3 install pdfplumber pymupdf python-docx
+pip3 install pdfplumber pymupdf python-docx faster-whisper pydub
 ```
 
-### "Empty extraction" or very short summary
+### Transcription: "No speech detected"
 
-The PDF may be scanned (image-only) rather than text-based. This plugin doesn't include OCR. Run the PDF through an OCR tool first (like Adobe Acrobat's "Recognize Text" or the open-source `ocrmypdf` tool).
-
-### The Word file shows "This document contains fields that may refer to other files"
-
-This is normal. The document includes a Table of Contents field. Click "No" to dismiss the dialog. The TOC displays correctly once you update the fields in Word (right-click the TOC and select "Update Field").
+The audio file may be corrupted, empty, or in an unsupported codec. Try converting it first:
+```bash
+ffmpeg -i input.m4a -acodec pcm_s16le -ar 16000 output.wav
+```
 
 ### Uninstalling
 
-If installed via plugin system:
 ```
-/plugin uninstall document-summarizer
+/plugin uninstall legal-toolkit
 ```
 
-If installed manually:
-```bash
-rm -rf ~/.claude/skills/document-summarizer
+## Architecture
+
 ```
+legal-toolkit/
+  .claude-plugin/plugin.json     # Plugin metadata
+  install.sh                     # Dependency installer for all skills
+  commands/                      # 31 slash command entry points
+  skills/                        # 31 skill directories
+    summarize/
+      SKILL.md                   # Skill instructions
+      scripts/                   # Python scripts
+    transcribe/
+      SKILL.md
+      scripts/
+        check_dependencies.py    # Verify/install dependencies
+        resolve_path.py          # File path resolution
+        transcribe_audio.py      # Background transcription with status.json polling
+        create_document.py       # Generate .docx output
+    ...
+```
+
+Each skill follows the same pattern: a `SKILL.md` with instructions and a `scripts/` directory with Python CLI tools. Scripts output JSON to stdout and progress to stderr.
+
+## License
+
+MIT
