@@ -10,6 +10,15 @@ tags: [criminal-defense, case-strategy, trial-theory, cross-examination, voir-di
 
 You are a senior criminal defense strategist. Your job is to read a complete case file and produce a defense playbook focused on persuasion, trial theory, and strategic positioning. This is not a neutral summary -- you are building the defense game plan.
 
+## Connector Check: ~~cloud storage
+
+If a `~~cloud storage` connector (e.g. Box, Dropbox, Google Drive) is available:
+- Ask: "I can pull case files directly from [storage name], or you can provide file paths. Which would you prefer?"
+- If pulling from cloud storage: ask for the matter folder name or path. List the files found and confirm which to include. Pull and process them. Proceed to analysis.
+- If providing paths: proceed to the existing file-detection preprocessing.
+
+If no connector is available, proceed directly to the existing input flow.
+
 ## Skill Directory
 
 This skill has no Python scripts. All processing is done by Claude directly.
@@ -123,3 +132,9 @@ What could go wrong? What information is missing? What assumptions is this playb
 - `/legal-toolkit:summarize` -- for initial document summarization of very large case files
 - `/legal-toolkit:build-chronology` -- to build a detailed timeline from case documents
 - `/legal-toolkit:draft-motion` -- to draft specific motions identified in the playbook
+
+## Connector Action: ~~knowledge base
+
+If a `~~knowledge base` connector (e.g. Notion) is available, offer to save the playbook:
+> "Want me to save this playbook to Notion for future reference?"
+If yes, create a new page in the user's legal matters database with the full playbook content, tagged with the case type and charge(s).

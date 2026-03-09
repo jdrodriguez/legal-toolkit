@@ -19,6 +19,15 @@ Criminal defense firms spend $200-$500 per lead through marketing. When a prospe
 Scripts are in the `scripts/` subdirectory of this skill's directory.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
+## Connector Check: ~~call transcription
+
+If a `~~call transcription` connector (e.g. Fireflies) is available:
+- Ask the user: "Would you like to pull a recent call from Fireflies, or provide a file/transcript directly?"
+- If pulling from Fireflies: search for recent transcripts by rep name, date range, or keyword. Present a list and let the user pick one. Use that transcript as input — skip all file-detection preprocessing.
+- If providing manually: proceed to the existing Step 1 file-detection flow.
+
+If no connector is available, proceed directly to Step 1.
+
 ## Step 1: Detect Input Type and Preprocess
 
 Before scoring, determine what the user provided and get it into text form.
@@ -123,3 +132,9 @@ Based on this call: **High / Medium / Low** likelihood the prospect signs. One t
 - **Caller was already sold (easy call):** Note this. A call where the caller says "I want to hire you" in the first 30 seconds does not test the rep's skills. Score the categories that were still relevant (compliance, qualification, fee presentation) and note that others were not tested.
 - **No objections raised:** Score Objection Handling as N/A rather than penalizing. Note: "No objections were raised during this call. Objection handling could not be evaluated."
 - **Rep gave legal advice:** Flag this immediately as a compliance issue regardless of how well the rest of the call went. This is a risk item, not just a scoring issue.
+
+## Connector Action: ~~chat
+
+If a `~~chat` connector (e.g. Slack) is available, offer to post the scorecard summary to a channel:
+> "Want me to post this scorecard to a Slack channel for coaching review?"
+If yes, post a formatted summary (rep name, overall score, top strength, top coaching opportunity).

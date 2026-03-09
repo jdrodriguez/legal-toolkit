@@ -10,6 +10,15 @@ Extract dated events from legal documents and build a master case chronology wit
 **Supported formats**: `.pdf`, `.docx`, `.txt`, `.md`
 **Input modes**: single file OR a directory containing multiple files
 
+## Connector Check: ~~cloud storage
+
+If a `~~cloud storage` connector (e.g. Box, Dropbox, Google Drive) is available:
+- Ask: "I can pull documents directly from [storage name] to build the chronology, or you can provide file paths. Which would you prefer?"
+- If pulling from cloud storage: ask for the matter folder. List documents found. Pull and extract dates and events from all documents in the folder.
+- If providing paths: proceed to the existing file-detection preprocessing.
+
+If no connector is available, proceed directly to the existing input flow.
+
 ## Skill Directory
 
 Scripts are in the `scripts/` subdirectory of this skill's directory.
@@ -133,3 +142,9 @@ If yes, use the `docx` skill (invoke with `/docx`) to produce a professional doc
 - **spaCy model missing**: The check_dependencies.py script auto-downloads it; if still failing, suggest `python3 -m spacy download en_core_web_sm`
 - **Agent failure**: Process the unprocessed documents directly
 - **Script not found**: Verify the skill is installed (`ls $SKILL_DIR/scripts/`)
+
+## Connector Action: ~~knowledge base
+
+If a `~~knowledge base` connector (e.g. Notion) is available, offer to save the chronology:
+> "Want me to save this chronology to Notion?"
+If yes, create a structured page with the chronology table and source citations, linked to the matter.

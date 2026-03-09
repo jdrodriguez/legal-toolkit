@@ -112,3 +112,15 @@ When should staff escalate to the attorney:
 - If the case type involves sensitive dynamics (domestic violence, custody disputes), add notes about safety-aware communication -- verify safe contact methods, avoid details in subject lines, etc.
 - If the client has limited English proficiency, note which touchpoints should be translated or handled by bilingual staff.
 - If the practice area has regulatory communication requirements (e.g., immigration status updates, bankruptcy notice obligations), flag those as mandatory touchpoints.
+
+## Connector Actions
+
+### ~~email
+If an `~~email` connector (e.g. Microsoft 365) is available, offer to create email drafts:
+> "Want me to create email drafts in Outlook for the first week of touchpoints?"
+If yes, create draft emails for each scheduled touchpoint in the first 7 days, pre-populated with the appropriate template text.
+
+### ~~chat
+If a `~~chat` connector (e.g. Slack) is available, offer to share the cadence:
+> "Want me to share the communication calendar with your team on Slack?"
+If yes, post a formatted summary of the 90-day cadence schedule to the specified channel.

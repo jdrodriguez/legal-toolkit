@@ -7,6 +7,15 @@ description: "Process email archives for e-discovery legal review. Parses .eml, 
 
 Parse email archives, reconstruct threads, detect duplicates, flag privilege, and visualize communication networks for legal review.
 
+## Connector Check: ~~email
+
+If an `~~email` connector (e.g. Microsoft 365, Gmail) is available:
+- Ask: "I can connect directly to your email to pull messages, or you can provide exported email files (.eml, .mbox, .msg). Which would you prefer?"
+- If connecting directly: ask for the folder, date range, sender/recipient, or subject filter. Pull matching emails via the connector. Proceed to processing with the retrieved messages.
+- If providing files: proceed to the existing file detection flow.
+
+If no connector is available, proceed directly to the existing input detection.
+
 **Supported formats**: `.eml`, `.msg`, `.mbox`, directories of mixed email files
 **Input modes**: single email file, mbox archive, OR a directory containing email files
 

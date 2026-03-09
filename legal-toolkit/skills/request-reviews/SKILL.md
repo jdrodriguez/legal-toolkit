@@ -135,3 +135,15 @@ A checklist the firm can reference to ensure every review request is ethical:
 - If the firm is in a state with unusually strict testimonial rules (check if provided), note the restriction and adjust scripts accordingly.
 - If the client is a repeat client (multiple matters), reference the ongoing relationship in the script rather than the single case.
 - If the firm has zero reviews on a platform, note that the first 5-10 reviews have outsized impact and recommend prioritizing that platform.
+
+## Connector Action: ~~email
+
+If an `~~email` connector (e.g. Microsoft 365, Gmail) is available, offer to send the review request:
+> "Want me to draft and send this review request email directly from your inbox?"
+If yes:
+1. Confirm the client's email address
+2. Show the final email text for approval
+3. Create a draft (do not send automatically — always show for confirmation first)
+4. Wait for explicit user approval before sending
+
+Never send an email without showing the user the final text and receiving explicit confirmation.

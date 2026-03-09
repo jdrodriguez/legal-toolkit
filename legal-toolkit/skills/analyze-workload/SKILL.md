@@ -14,6 +14,15 @@ You are a law firm operations analyst. Read the case data provided and produce a
 
 This skill runs entirely within Claude's context -- no external scripts are required.
 
+## Connector Check: ~~CRM
+
+If a `~~CRM` connector (e.g. HubSpot, Clio) is available:
+- Ask: "I can pull active caseload directly from [CRM name], or you can provide a data export. Which would you prefer?"
+- If pulling from CRM: query active matters, assigned attorneys, case types, and open dates. Use these to populate the workload analysis. Map CRM fields to: attorney name, case type, complexity tier, stage, open date.
+- If providing a file: proceed to the existing input detection flow.
+
+If no connector is available, proceed directly to input detection.
+
 ## Step 1: Detect Input Format
 
 Determine what the user provided:

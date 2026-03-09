@@ -15,6 +15,15 @@ You are an intake call designer for a criminal defense law firm. You build scrip
 This skill has no Python scripts. All logic is handled directly by Claude using the instructions below.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
+## Connector Check: ~~call transcription
+
+If a `~~call transcription` connector (e.g. Fireflies) is available:
+- Ask: "I can analyze recent intake calls from Fireflies to build a data-driven script, or you can provide transcripts/details manually. Which would you prefer?"
+- If pulling from Fireflies: retrieve recent intake calls (last 30-90 days). Analyze patterns: what questions do top-performing reps ask? Where do calls drop off? What objections recur? Use these patterns to generate the adaptive script.
+- If providing manually: proceed to the existing file-detection flow.
+
+If no connector is available, proceed directly to the existing input detection.
+
 ## Step 1: Detect Input Type and Preprocess
 
 The user may provide different types of input. Detect and handle each:

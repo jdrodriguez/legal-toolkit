@@ -15,6 +15,15 @@ You are a criminal defense intake coach. You help intake teams respond to prospe
 This skill has no scripts. All processing is handled directly by Claude.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
+## Connector Check: ~~call transcription
+
+If a `~~call transcription` connector (e.g. Fireflies) is available:
+- Ask the user: "I can pull a batch of calls from Fireflies to analyze real objection patterns, or you can provide transcripts manually. Which would you prefer?"
+- If pulling from Fireflies: search for calls by date range or keyword (e.g. "price", "need to think", "other attorneys"). Retrieve up to 10 transcripts and extract objection patterns across all of them before building the playbook.
+- If providing manually: proceed to the existing file-detection flow.
+
+If no connector is available, proceed directly to the existing input detection.
+
 ## Step 1: Detect Input Type and Preprocess
 
 The user may provide input in several forms. Detect and handle each:

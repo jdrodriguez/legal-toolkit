@@ -173,3 +173,9 @@ Present all outputs organized by platform. After each section, ask:
 - **Source content covers a sensitive topic (sexual assault, domestic violence, child abuse, wrongful death):** Adjust tone across all platforms. No casual or punchy takes. No myth-buster format. Lead with empathy and education. Flag: "Sensitive topic -- all outputs use measured, empathetic tone. Review carefully before posting."
 - **Firm does not use certain platforms:** Skip those outputs. Only produce content for platforms the firm actively uses. Ask if unsure.
 - **Source content is in a non-English language:** Produce outputs in the same language as the source, unless the firm requests otherwise.
+
+## Connector Action: ~~chat
+
+If a `~~chat` connector (e.g. Slack) is available, offer to share the content for review:
+> "Want me to post the generated content to a Slack channel for team review before publishing?"
+If yes, post the 5 social media posts (clearly labeled by platform) to the specified channel. Do not post email or GBP content to Slack — those are best reviewed in the document.
