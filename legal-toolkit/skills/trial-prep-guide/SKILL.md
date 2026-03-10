@@ -37,15 +37,25 @@ This skill produces a 10-section trial notebook that will exceed a single agent'
    - Run `mkdir -p "$WORK_DIR/sections"`.
 3. **Launch 5 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`). Each agent reads `case_materials.md` and `case_context.md`, then writes its assigned sections following the format specifications in Step 4:
 
-| Agent | Sections | Output File |
-|-------|----------|-------------|
-| 1 | Case Snapshot + Chronology (1-2) | `$WORK_DIR/sections/sections_1_2.md` |
-| 2 | Witness Profiles (3) | `$WORK_DIR/sections/section_3.md` |
-| 3 | NHTSA Compliance + Evidence Inventory (4-5) | `$WORK_DIR/sections/sections_4_5.md` |
-| 4 | Inconsistencies + Chemical Test (6-7) | `$WORK_DIR/sections/sections_6_7.md` |
-| 5 | Motions + Next Steps + Strategy (8-10) | `$WORK_DIR/sections/sections_8_10.md` |
+| Agent | Sections | Output File | Max Length |
+|-------|----------|-------------|------------|
+| 1 | Case Snapshot + Chronology (1-2) | `$WORK_DIR/sections/sections_1_2.md` | 150 lines |
+| 2 | Witness Profiles (3) | `$WORK_DIR/sections/section_3.md` | 200 lines |
+| 3 | NHTSA Compliance + Evidence Inventory (4-5) | `$WORK_DIR/sections/sections_4_5.md` | 200 lines |
+| 4 | Inconsistencies + Chemical Test (6-7) | `$WORK_DIR/sections/sections_6_7.md` | 150 lines |
+| 5 | Motions + Next Steps + Strategy (8-10) | `$WORK_DIR/sections/sections_8_10.md` | 200 lines |
 
-4. **Include in each agent's prompt**: Copy the relevant section format specifications from the `## Step 4: Build the Trial Prep Guide` section below into the agent's prompt so it knows the exact output format. Also include: "Read `$WORK_DIR/case_materials.md` for the case documents and `$WORK_DIR/case_context.md` for case parameters. Cite source documents throughout. Flag all case law as [VERIFY] and missing info as [NEEDS INVESTIGATION]. Be a defense attorney, not a neutral summarizer. Write your sections to `{output_file}`."
+4. **Include in each agent's prompt**: Copy the relevant section format specifications from the `## Step 4: Build the Trial Prep Guide` section below into the agent's prompt so it knows the exact output format. Also include these instructions verbatim:
+
+> Read `$WORK_DIR/case_materials.md` for the case documents and `$WORK_DIR/case_context.md` for case parameters. Write your sections to `{output_file}`.
+>
+> **Rules:**
+> - Cite source documents throughout. Flag all case law as [VERIFY] and missing info as [NEEDS INVESTIGATION].
+> - Be a defense attorney, not a neutral summarizer.
+> - **Do NOT add a title page, case header, or section-group heading.** Start directly with the first section heading (e.g., `## 1. Case Snapshot`). The orchestrator will assemble all sections into the final document.
+> - **Stay within {max_length} lines.** This is a hard limit. Be concise — use bullet points, not multi-paragraph narratives. One sentence per bullet. Table cells must be 1-2 sentences max, never multi-paragraph.
+> - Prioritize the most important findings. A tight, actionable 3-page section is more useful than an exhaustive 15-page section. Attorneys skim trial notebooks — make every line count.
+
 5. **Collect and present**: After all agents complete, read section files in numerical order (1-2, 3, 4-5, 6-7, 8-10) and present the assembled trial prep guide. Do NOT re-analyze the case materials yourself — trust the subagent outputs.
 6. **Offer .docx export**: After presenting, offer to generate a formatted Word document.
 
@@ -106,15 +116,16 @@ Format as a table:
 
 ### 3. Witness Profiles
 
-For every person mentioned across all documents -- officers, witnesses, the defendant, lab technicians, dispatchers -- create a profile:
-- **Identity:** Name, role, relationship to the case
-- **Account:** What they said or observed (summarize, then quote key language)
-- **Credibility:** Inconsistencies with other sources, potential bias, perception issues (lighting, distance, angle, fatigue, intoxication of the witness)
-- **Cross-examination angles:** Specific questions or lines of attack based on what you found
+For every person mentioned across all documents -- officers, witnesses, the defendant, lab technicians, dispatchers -- create a profile. **Keep each profile to 20-30 lines max.** Do not write multi-paragraph narratives for each issue — use concise bullets.
+
+- **Identity:** Name, role (1 line)
+- **Key account:** 3-5 bullet points summarizing what they said or observed, with one key quote each
+- **Credibility issues:** Bulleted list of inconsistencies, bias, perception problems (1-2 sentences each)
+- **Top cross-examination questions:** 2-3 specific questions, not full examination scripts
 
 ### 4. NHTSA Compliance Analysis
 
-For each field sobriety test administered, compare what the officer did against what NHTSA protocol requires. Cite specific NHTSA manual sections.
+For each field sobriety test administered, compare what the officer did against what NHTSA protocol requires. Cite specific NHTSA manual sections. **Table cells must be 1-2 sentences max — no multi-paragraph analysis in cells.** One row per clue or test element.
 
 Format as a table:
 
@@ -135,7 +146,7 @@ List every piece of physical and documentary evidence in the file:
 
 ### 6. Cross-Document Inconsistencies
 
-Compare every source document against every other source document. Quote the exact language from each source -- do not paraphrase.
+Compare every source document against every other source document. Quote the exact language from each source -- do not paraphrase. **Keep quotes short (one sentence each). Put extended analysis in the Defense Significance column, not in the quote columns.**
 
 Format as a table:
 
@@ -189,8 +200,9 @@ Preliminary defense themes based on what the file reveals:
 - Cite source documents (page numbers, timestamps, paragraph references) for every factual claim
 - Flag every case law reference with [VERIFY] -- attorney must confirm independently
 - Flag missing information as [NEEDS INVESTIGATION] rather than guessing
-- Target length: 15-25 pages depending on case complexity
+- **Target length: 15-25 printed pages (700-1000 lines of markdown).** This is a hard constraint. Anything longer is unusable in a courtroom — attorneys need a concise working notebook, not a treatise.
 - Format for printing -- use headers, tables, and bullet points suitable for a physical trial notebook
+- **Conciseness rules:** Bullet points over paragraphs. One sentence per bullet. Table cells max 1-2 sentences. No multi-paragraph narrative blocks. No redundant case headers between sections.
 
 
 ## Accuracy and QA (Required)
