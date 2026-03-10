@@ -15,6 +15,23 @@ Extract text from scanned PDFs and images using high-accuracy OCR with confidenc
 Scripts are in the `scripts/` subdirectory of this skill's directory.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory. Use `SKILL_DIR` in all script paths below.
 
+## Agent Delegation (Conditional)
+
+For directories with **10+ files**, delegate result analysis to avoid context overflow from summarizing many OCR outputs simultaneously.
+
+### When to Delegate
+
+- **1-9 files**: Process and present results directly — no delegation needed.
+- **10+ files**: After OCR processing completes, delegate result analysis to subagents.
+
+### Orchestrator Workflow (When Delegating)
+
+1. **You handle**: Steps 1-3 below (validate, check deps, run OCR on the entire directory).
+2. **After OCR completes**, read the JSON output to get the list of processed files and their results.
+3. **Divide files into groups of ~10** and launch one subagent per group (Agent tool, `subagent_type: "general-purpose"`). Substitute the resolved `$OUTPUT_DIR` path literally into each agent's prompt — do not pass shell variable names. Each agent's prompt:
+   > "Read the OCR output files for these documents: {list of files}. For each, note: pages processed, average confidence, any low-confidence pages. Write a summary to `$OUTPUT_DIR/batch_{N}_summary.md`."
+4. **Collect and present**: Read batch summaries, compile overall statistics, present to the user per Steps 4-5.
+
 ## Process
 
 ### Step 1: Validate Input

@@ -16,6 +16,27 @@ You are an operations consultant specializing in law firm client experience. You
 - The client journey in legal matters is emotionally charged. Clients are stressed, confused, and often making the most important purchasing decision of their life under time pressure.
 - Improvements to the client journey directly impact revenue (higher conversion at intake), retention (fewer clients firing their attorney), and reputation (better reviews, more referrals).
 
+## Agent Delegation (Required)
+
+This skill produces 6 detailed analysis sections (journey map, pain points, conversion, automation, coaching, roadmap). Delegate to subagents to avoid context window exhaustion.
+
+### Orchestrator Workflow
+
+1. **You handle**: Gather all inputs (practice area, current process, feedback, firm size, tools). Use the Connector Check and Instructions sections below.
+2. **Save inputs**: Create `WORK_DIR` as `{parent_dir}/{firm_name}_journey_work`.
+   - Write all gathered firm information to `$WORK_DIR/firm_context.md` — practice area, process description, feedback data, roles, tools, and CRM data if available.
+   - Run `mkdir -p "$WORK_DIR/sections"`.
+3. **Launch 3 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`):
+
+| Agent | Sections | Output File |
+|-------|----------|-------------|
+| 1 | Journey Map (all stages with detailed tables per stage) | `$WORK_DIR/sections/journey_map.md` |
+| 2 | Pain Point Analysis + Drop-Off/Conversion Analysis | `$WORK_DIR/sections/pain_points.md` |
+| 3 | Automation Opportunities + Coaching Gaps + Improvement Roadmap | `$WORK_DIR/sections/recommendations.md` |
+
+4. **Include in each agent's prompt**: Copy the relevant section specifications from the Instructions below. Also include: "Read `$WORK_DIR/firm_context.md` for all firm details. Tailor all analysis to the firm's practice area. Base recommendations on what the firm actually described. Do NOT write an executive summary — the orchestrator will write that. Write output to `{output_file}`."
+5. **Collect and assemble**: Read section files, write a one-page executive summary (biggest finding, top 3 changes, estimated impact), and present the full journey analysis.
+
 ## Connector Check: ~~CRM
 
 If a `~~CRM` connector (e.g. HubSpot, Clio) is available:

@@ -15,6 +15,29 @@ You are a senior criminal defense attorney conducting a detailed discovery analy
 This skill has no Python scripts. All processing is done by Claude directly.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
+## Agent Delegation (Required)
+
+This skill produces a 9-section defense memo that will exceed a single agent's context window. You MUST delegate the analysis to subagents. Do NOT attempt to build all 9 sections yourself.
+
+### Orchestrator Workflow
+
+1. **You handle**: Steps 1-2 below (detect input type, extract text, identify reference materials).
+2. **Save extracted text**: Create `WORK_DIR` as `{parent_dir}/{case_name}_discovery_work`.
+   - Write all extracted text to `$WORK_DIR/case_materials.md` with clear `## Source: {filename}` headers per document.
+   - Write reference material availability (NHTSA manual, statutes, templates) and jurisdiction to `$WORK_DIR/case_context.md`.
+   - Run `mkdir -p "$WORK_DIR/sections"`.
+3. **Launch 4 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`):
+
+| Agent | Sections | Output File |
+|-------|----------|-------------|
+| 1 | Case Snapshot + Chronology + Evidence Inventory (1-3) | `$WORK_DIR/sections/sections_1_3.md` |
+| 2 | Officer Conduct + NHTSA Compliance (4-5) | `$WORK_DIR/sections/sections_4_5.md` |
+| 3 | Statutory Analysis + Inconsistencies (6-7) | `$WORK_DIR/sections/sections_6_7.md` |
+| 4 | Motion Opportunities + Next Steps (8-9) | `$WORK_DIR/sections/sections_8_9.md` |
+
+4. **Include in each agent's prompt**: Copy the relevant section specifications from Step 3 below into the prompt. Also include: "Read `$WORK_DIR/case_materials.md` and `$WORK_DIR/case_context.md`. Analyze for the defense. Cite sources with page numbers and timestamps. Quote exact language for inconsistencies — do not paraphrase. Flag case law as [CASE LAW RESEARCH NEEDED] and gaps as [NEEDS INVESTIGATION]. Write output to `{output_file}`."
+5. **Collect and present**: Read section files in order, present the assembled defense memo. Do NOT re-analyze the case materials yourself.
+
 ## Context
 
 Criminal defense firms receive discovery packages -- police reports, body cam transcripts, witness statements, lab results, calibration records -- and attorneys spend hours reading them side-by-side with reference manuals and statutes. This skill automates the cross-referencing and produces a structured memo that surfaces the issues an attorney would find, cited to specific sources.
@@ -67,7 +90,7 @@ If the NHTSA manual is not available, note this for Step 3 -- the NHTSA complian
 
 ## Step 3: Produce the Defense Memo
 
-Analyze all extracted text and produce the following sections. For large discovery packages with many documents, use parallel agents to analyze different document groups simultaneously, then synthesize.
+Analyze all extracted text and produce the following sections. **Follow the Agent Delegation workflow above** — save extracted text to files and launch subagents for the section groups defined in the delegation table.
 
 ### Section 1: Case Snapshot
 

@@ -24,6 +24,29 @@ If no connector is available, proceed directly to the existing input detection.
 Scripts are in the `scripts/` subdirectory of this skill's directory.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory. Use `SKILL_DIR` in all script paths below.
 
+## Agent Delegation (Conditional)
+
+For large email archives (**100+ emails**), delegate result analysis to avoid context overflow.
+
+### When to Delegate
+
+- **Under 100 emails**: Process and present results directly — no delegation needed.
+- **100+ emails**: After the processing script completes, delegate analysis of different output categories to subagents.
+
+### Orchestrator Workflow (When Delegating)
+
+1. **You handle**: Steps 1-4 below (validate, check deps, configure options, run processing).
+2. **After processing completes**, launch **3 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`). Substitute the resolved `$OUTPUT_DIR` path literally into each agent's prompt — do not pass shell variable names:
+
+| Agent | Task | Output File |
+|-------|------|-------------|
+| 1 | Analyze `privilege_flags.xlsx` — present flagged items with date, from, to, subject, flag reason | `$OUTPUT_DIR/privilege_analysis.md` |
+| 2 | Analyze `threads.json` and `communication_network.html` — summarize thread patterns and key relationships | `$OUTPUT_DIR/thread_analysis.md` |
+| 3 | Analyze `duplicates.xlsx` and `processing_summary.txt` — compile statistics and duplicate findings | `$OUTPUT_DIR/stats_analysis.md` |
+
+3. **Include in each agent's prompt**: "Read the specified files from `$OUTPUT_DIR`. Write a clear analysis summary to `{output_file}`. For privilege flags, emphasize these are automated flags requiring human review."
+4. **Collect and present**: Read analysis files, compile findings, and present to the user per Steps 5-7.
+
 ## Process
 
 ### Step 1: Validate Input

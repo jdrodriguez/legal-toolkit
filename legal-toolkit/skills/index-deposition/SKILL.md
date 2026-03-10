@@ -15,6 +15,24 @@ Transcribe deposition recordings with timestamps, speaker identification, topic 
 Scripts are in the `scripts/` subdirectory of this skill's directory.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory. Use `SKILL_DIR` in all script paths below.
 
+## Agent Delegation (Conditional)
+
+For long depositions, the transcript analysis and .docx generation can exceed a single agent's context window. Delegate when the transcript is large.
+
+### When to Delegate
+
+- **Transcript under 500 lines**: Analyze directly — no delegation needed.
+- **Transcript over 500 lines**: After the indexer completes (Step 4), delegate transcript analysis to subagents.
+
+### Orchestrator Workflow (When Delegating)
+
+1. **You handle**: Steps 1-4 (validate, check deps, warn, run indexer). Also handle Steps 5-6 (present summary and key moments from the JSON outputs — these are compact).
+2. **Check transcript size**: `wc -l < "$OUTPUT_DIR/transcript.txt"`. If over 500 lines, delegate.
+3. **Split and delegate**: Divide `transcript.txt` into ~500-line sections. Launch one subagent per section (Agent tool, `subagent_type: "general-purpose"`). Run `mkdir -p "$OUTPUT_DIR/analysis"` first. Each agent's prompt:
+   > "Read lines {start} to {end} of `{resolved_OUTPUT_DIR}/transcript.txt` (use the Read tool with offset and limit). Write your analysis to `{resolved_OUTPUT_DIR}/analysis/section_{N}.md` with: section summary (2-3 paragraphs), key topics, notable testimony quotes with timestamps, and any contradictions or admissions detected."
+4. **Synthesize**: After all agents complete, read the section analysis files. Combine into a unified deposition analysis: executive summary, consolidated key topics, all notable quotes, and overall testimony assessment.
+5. **Continue to Step 7**: Present the timeline and outputs. Use the synthesized analysis for the .docx generation in Step 8.
+
 ## Process
 
 ### Step 1: Validate Input

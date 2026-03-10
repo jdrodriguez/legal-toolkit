@@ -14,6 +14,29 @@ You are a content strategist for a law firm. Take one piece of source content an
 
 Law firms invest hours creating source content -- blog posts, podcast episodes, videos, CLE presentations -- but each piece usually lives in one format. A blog post stays a blog post. Content multiplication takes that single piece and produces 12+ derivative outputs across platforms, all in the firm's authentic voice. The firm gets a week's worth of content from one writing session.
 
+## Agent Delegation (Required)
+
+This skill produces 12+ derivative pieces across 4 platforms. To avoid context window exhaustion, delegate content generation to subagents.
+
+### Orchestrator Workflow
+
+1. **You handle**: Steps 1-2 below (detect input and extract source content, establish voice profile).
+2. **Save source content**: Create `WORK_DIR` as `{parent_dir}/{content_name}_multiply_work`.
+   - Write extracted source text to `$WORK_DIR/source_content.md`.
+   - Write the voice profile to `$WORK_DIR/voice_profile.md`.
+   - Run `mkdir -p "$WORK_DIR/outputs"`.
+3. **Launch 4 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`):
+
+| Agent | Platform | Output File |
+|-------|----------|-------------|
+| 1 | Social Media Posts (5: 3 FB/IG + 1 LinkedIn + 1 X) | `$WORK_DIR/outputs/social_media.md` |
+| 2 | Email Newsletter Snippets (3) | `$WORK_DIR/outputs/email_snippets.md` |
+| 3 | Google Business Profile Posts (3) | `$WORK_DIR/outputs/gbp_posts.md` |
+| 4 | Short-Form Video Script (1) | `$WORK_DIR/outputs/video_script.md` |
+
+4. **Include in each agent's prompt**: Copy the relevant platform format specifications from Step 3 below. Also include: "Read `$WORK_DIR/source_content.md` for source material and `$WORK_DIR/voice_profile.md` for voice guidelines. Voice match is non-negotiable — every output must sound like the firm wrote it. Write output to `{output_file}`."
+5. **Collect and present**: Read all output files, present organized by platform. Ask for refinement per Step 4.
+
 ## Step 1: Detect Input Type and Extract Source Content
 
 Before multiplying, determine what the user provided and extract text accordingly.

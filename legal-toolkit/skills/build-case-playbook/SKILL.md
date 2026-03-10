@@ -24,6 +24,30 @@ If no connector is available, proceed directly to the existing input flow.
 This skill has no Python scripts. All processing is done by Claude directly.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
+## Agent Delegation (Required)
+
+This skill produces a 9-section defense playbook that will exceed a single agent's context window. You MUST delegate the analysis work to subagents. Do NOT attempt to build all 9 sections yourself.
+
+### Orchestrator Workflow
+
+1. **You handle**: Steps 1-2 below (validate input, confirm jurisdiction).
+2. **Save extracted text**: Create `WORK_DIR` as `{parent_dir}/{case_name}_playbook_work`.
+   - Write all extracted document text to `$WORK_DIR/case_materials.md` with clear `## Source: {filename}` headers per document.
+   - Write jurisdiction, charges, and user context to `$WORK_DIR/case_context.md`.
+   - Run `mkdir -p "$WORK_DIR/sections"`.
+3. **Launch 4 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`):
+
+| Agent | Sections | Output File |
+|-------|----------|-------------|
+| 1 | Case Overview + Defense Theory + Secondary Strategy (1-3) | `$WORK_DIR/sections/sections_1_3.md` |
+| 2 | Prosecution's Strongest Evidence + Cross-Examination (4-5) | `$WORK_DIR/sections/sections_4_5.md` |
+| 3 | Defense Witnesses + Jury Considerations (6-7) | `$WORK_DIR/sections/sections_6_7.md` |
+| 4 | Recommended Motions + Risks & Unknowns (8-9) | `$WORK_DIR/sections/sections_8_9.md` |
+
+4. **Include in each agent's prompt**: Copy the relevant section format specifications from the `## Step 3: Build the Defense Playbook` section below into the agent's prompt. Also include: "Read `$WORK_DIR/case_materials.md` for the case documents and `$WORK_DIR/case_context.md` for case parameters. Analyze for the defense — this is a defense playbook, not a neutral summary. Cite source documents. Flag case law as [VERIFY] and missing info as [NEEDS INVESTIGATION]. Write output to `{output_file}`."
+5. **Collect and present**: Read section files in order, present the assembled playbook. Do NOT re-analyze the case materials yourself.
+6. **Offer to save**: If a knowledge base connector is available, offer to save.
+
 ## Step 1: Validate and Detect Input
 
 The user may provide case materials in several forms. Handle each:

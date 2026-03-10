@@ -15,6 +15,24 @@ Analyze video files frame-by-frame using scene-aware extraction and visual AI an
 Scripts are in the `scripts/` subdirectory of this skill's directory.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory. Use `SKILL_DIR` in all script paths below.
 
+## Agent Delegation (Required)
+
+Video analysis is extremely token-intensive — processing 50-500+ frames through vision will exceed a single agent's context window. You MUST delegate frame analysis to subagents.
+
+### Orchestrator Workflow
+
+1. **You handle**: Steps 1-4 below (validate, check deps, warn user, extract frames).
+2. **After frame extraction**, read the chapter directory structure to get chapter count and frame counts per chapter.
+3. **Launch one subagent per chapter in parallel** (Agent tool, `subagent_type: "general-purpose"`). Run `mkdir -p "$OUTPUT_DIR/chapters"` first. Substitute the resolved `$OUTPUT_DIR` path literally into each agent's prompt — do not pass shell variable names. Each agent's prompt:
+   > "You are analyzing video frames for forensic review. Read `$OUTPUT_DIR/frames/chapter_{NNN}/metadata.json` for the chapter's time range. Then read all frame images in `$OUTPUT_DIR/frames/chapter_{NNN}/` in chronological order, in batches of 10-20.
+   >
+   > For each frame, describe: visible elements, actions, environment, visible text, and changes from previous frame. Flag key moments: use of force, weapons, new individuals, evidence handling, restraints, camera shifts. Group similar consecutive frames into segments with timestamp ranges.
+   >
+   > Write your analysis to `$OUTPUT_DIR/chapters/chapter_{NNN}_analysis.md` with: chapter summary, frame descriptions (grouped into segments), key moments table, and individuals observed."
+
+4. **Collect and compile**: After all chapter agents complete, read all `chapter_*_analysis.md` files. Assemble the forensic report (Step 6) from the chapter analyses — compile the timeline, key moments, individuals, and evidence notes. Write `forensic_report.md`. Do NOT re-analyze frames yourself.
+5. **Present**: Show Video Summary and Key Moments per Step 7.
+
 ## Process
 
 ### Step 1: Validate Input
@@ -91,7 +109,9 @@ Monitor stderr for progress and relay to the user:
 
 ### Step 5: Analyze Frames Chapter by Chapter
 
-Process each chapter directory in order. For each chapter:
+**Note:** This step is handled by the per-chapter subagents launched in the Agent Delegation section above. Skip to Step 6 to compile the report from their outputs.
+
+The following instructions are the specifications each subagent follows. For each chapter:
 
 1. **Read `metadata.json`** to understand the chapter's time range, frame count, and any scene change markers.
 

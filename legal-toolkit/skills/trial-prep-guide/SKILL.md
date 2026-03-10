@@ -24,6 +24,31 @@ If no connector is available, proceed directly to the existing input flow.
 This skill has no Python scripts. All processing is done by Claude directly.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
+## Agent Delegation (Required)
+
+This skill produces a 10-section trial notebook that will exceed a single agent's context window. You MUST delegate the analysis work to subagents. Do NOT attempt to build all 10 sections yourself.
+
+### Orchestrator Workflow
+
+1. **You handle**: Steps 1-3 below (validate input, confirm jurisdiction, identify reference materials).
+2. **Save extracted text**: Create `WORK_DIR` as `{parent_dir}/{case_name}_trial_prep_work`.
+   - Write all extracted document text to `$WORK_DIR/case_materials.md` with clear `## Source: {filename}` headers per document.
+   - Write jurisdiction, charges, defendant info, reference material notes, and any user context to `$WORK_DIR/case_context.md`.
+   - Run `mkdir -p "$WORK_DIR/sections"`.
+3. **Launch 5 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`). Each agent reads `case_materials.md` and `case_context.md`, then writes its assigned sections following the format specifications in Step 4:
+
+| Agent | Sections | Output File |
+|-------|----------|-------------|
+| 1 | Case Snapshot + Chronology (1-2) | `$WORK_DIR/sections/sections_1_2.md` |
+| 2 | Witness Profiles (3) | `$WORK_DIR/sections/section_3.md` |
+| 3 | NHTSA Compliance + Evidence Inventory (4-5) | `$WORK_DIR/sections/sections_4_5.md` |
+| 4 | Inconsistencies + Chemical Test (6-7) | `$WORK_DIR/sections/sections_6_7.md` |
+| 5 | Motions + Next Steps + Strategy (8-10) | `$WORK_DIR/sections/sections_8_10.md` |
+
+4. **Include in each agent's prompt**: Copy the relevant section format specifications from the `## Step 4: Build the Trial Prep Guide` section below into the agent's prompt so it knows the exact output format. Also include: "Read `$WORK_DIR/case_materials.md` for the case documents and `$WORK_DIR/case_context.md` for case parameters. Cite source documents throughout. Flag all case law as [VERIFY] and missing info as [NEEDS INVESTIGATION]. Be a defense attorney, not a neutral summarizer. Write your sections to `{output_file}`."
+5. **Collect and present**: After all agents complete, read section files in numerical order (1-2, 3, 4-5, 6-7, 8-10) and present the assembled trial prep guide. Do NOT re-analyze the case materials yourself — trust the subagent outputs.
+6. **Offer .docx export**: After presenting, offer to generate a formatted Word document.
+
 ## Step 1: Validate and Detect Input
 
 The user may provide case materials in several forms. Handle each:

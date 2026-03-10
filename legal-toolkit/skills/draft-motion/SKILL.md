@@ -14,6 +14,34 @@ Draft filing-ready criminal defense motions from case documents and templates. R
 
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
+## Agent Delegation (Conditional)
+
+For cases with **5+ source documents** or **multiple motions requested**, delegate the drafting work to subagents to avoid exceeding the context window.
+
+### When to Delegate
+
+- **5+ case documents**: The combined text extraction + motion drafting exceeds a single agent's context. Delegate.
+- **Multiple motions from one case**: Each motion should be drafted by a separate agent. Delegate.
+- **Single motion from 1-4 documents**: You may draft directly without delegation.
+
+### Orchestrator Workflow (When Delegating)
+
+1. **You handle**: Steps 1-2 below (gather inputs, extract text from all documents).
+2. **Save extracted text**: Create `WORK_DIR` as `{parent_dir}/{case_name}_motion_work`.
+   - Write all extracted text to `$WORK_DIR/case_materials.md` with source document headers.
+   - Write motion type, jurisdiction, template structure, and drafting preferences to `$WORK_DIR/motion_context.md`.
+   - Run `mkdir -p "$WORK_DIR/sections"`.
+3. **For a single motion**, launch **2 subagents in parallel**:
+
+| Agent | Task | Output File |
+|-------|------|-------------|
+| 1 | Caption + Statement of Facts + Evidence References (3a, 3b, 3e) | `$WORK_DIR/sections/motion_facts.md` |
+| 2 | Legal Standard + Argument + Prayer for Relief (3c, 3d, 3f) | `$WORK_DIR/sections/motion_law.md` |
+
+4. **For multiple motions**, launch **one agent per motion**, each drafting a complete motion and writing to `$WORK_DIR/sections/motion_{type}.md`.
+5. **Include in each agent's prompt**: Copy the relevant format specifications from the `## Step 3: Draft the Motion` section below. Also include: "Read `$WORK_DIR/case_materials.md` and `$WORK_DIR/motion_context.md`. Follow the template if provided. Fill all caption fields from the case file — use [FILL] for missing values. Mark all case law as [VERIFY]. Write output to `{output_file}`."
+6. **Collect and assemble**: Read output files in order — `motion_facts.md` first (caption, statement of facts, evidence references), then `motion_law.md` (legal standard, argument, prayer for relief). Merge into a single complete motion document. Present with the gaps/verification checklist from Step 4.
+
 ## Step 1: Gather Inputs
 
 Ask the user for the following (if not already provided):
