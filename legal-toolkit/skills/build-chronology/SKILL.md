@@ -138,6 +138,7 @@ If yes, use the npm `docx` package to generate a professional Word document cont
 - **Path not found**: Ask user to verify the path
 - **Unsupported format**: Supported types are `.pdf`, `.docx`, `.txt`, `.md`
 - **Empty directory**: No supported files found — ask user to check the folder
+- **Empty extraction**: File may be scanned/image-only. **Delegate OCR to a subagent**: launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `$OUTPUT_DIR/{filename}_ocr.txt`." Re-run chronology on the OCR output.
 - **No dates found**: Document may not contain recognizable dates; suggest manual review
 - **spaCy model missing**: The check_dependencies.py script auto-downloads it; if still failing, suggest `python3 -m spacy download en_core_web_sm`
 - **Agent failure**: Process the unprocessed documents directly

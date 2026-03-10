@@ -87,5 +87,5 @@ Present these options:
 - **Path not found**: Ask user to verify the paths
 - **Unsupported format**: Supported types are `.pdf`, `.docx`, `.txt`
 - **Identical documents**: Report that no differences were found
-- **Empty extraction**: File may be scanned/image-only; suggest running `/legal-toolkit:extract-text` first
+- **Empty extraction**: File may be scanned/image-only. **Delegate OCR to a subagent**: launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `{parent_dir}/{filename}_ocr.txt`." Re-run comparison on the OCR output.
 - **Script not found**: Verify the skill is installed (`ls $SKILL_DIR/scripts/`)

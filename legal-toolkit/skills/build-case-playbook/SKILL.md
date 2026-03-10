@@ -54,7 +54,7 @@ The user may provide case materials in several forms. Handle each:
 
 ### File paths (PDF, DOCX, TXT, MD)
 1. Confirm the file(s) exist and note their extensions.
-2. For **PDF files**: attempt to read with `python3 -c "import fitz; doc=fitz.open('FILE'); [print(page.get_text()) for page in doc]"`. If the extracted text is empty or garbled (scanned document), chain to the **ocr** skill: invoke `/legal-toolkit:extract-text` on the file first, then use the OCR output as input.
+2. For **PDF files**: attempt to read with `python3 -c "import fitz; doc=fitz.open('FILE'); [print(page.get_text()) for page in doc]"`. If the extracted text is empty or garbled (scanned document), **delegate OCR to a subagent**: launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `$WORK_DIR/{filename}_ocr.txt`." Continue processing other files while the OCR agent works. Collect the OCR output before assembling `case_materials.md`.
 3. For **DOCX files**: extract text with `python3 -c "from docx import Document; doc=Document('FILE'); [print(p.text) for p in doc.paragraphs]"`.
 4. For **TXT/MD files**: read directly.
 
@@ -148,7 +148,7 @@ What could go wrong? What information is missing? What assumptions is this playb
 - If the case file is very thin (only an arrest report), produce what you can and flag extensively what is missing and what discovery to request.
 - If multiple defendants are involved, build a separate strategy section for each or note where interests diverge.
 - If the charge is a lesser included offense situation, address both the primary charge and the lesser included in the defense theory.
-- If input files are scanned PDFs with no extractable text, chain to `/legal-toolkit:extract-text` before proceeding.
+- If input files are scanned PDFs with no extractable text, delegate OCR to a subagent as described in Step 1.
 
 ## Related Skills
 

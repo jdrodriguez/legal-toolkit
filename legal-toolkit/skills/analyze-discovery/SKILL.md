@@ -53,9 +53,9 @@ Before analysis, determine what the user has provided and preprocess accordingly
 For each file, determine the type and extract text:
 
 1. **Scanned PDFs** (image-based, no selectable text):
-   - Chain to `/legal-toolkit:extract-text` to extract text first.
-   - Run: `/legal-toolkit:extract-text` on each scanned PDF.
-   - Use the OCR output text for analysis.
+   - **Delegate OCR to subagents**: For each scanned PDF, launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `$WORK_DIR/{filename}_ocr.txt`."
+   - Launch all OCR agents in parallel. Continue processing non-scanned files.
+   - Collect OCR outputs before assembling `case_materials.md`.
 
 2. **Text-based PDFs, DOCX, TXT, MD files**:
    - Chain to `/legal-toolkit:doc-summary` to extract and process the text.

@@ -37,7 +37,7 @@ The user has a recording of an intake call containing objections. Chain to the t
 
 ### PDF/DOCX Files
 The user has written objection notes or call logs in a document:
-- For **PDF**: Use the Read tool to extract text content. If the PDF is scanned/image-based, chain to `/legal-toolkit:extract-text` first.
+- For **PDF**: Use the Read tool to extract text content. If the PDF is scanned/image-based (empty or garbled text), **delegate OCR to a subagent**: launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `{parent_dir}/{filename}_ocr.txt`." Use the OCR output text.
 - For **DOCX**: Use `python3 -c "from docx import Document; doc = Document('<path>'); print('\n'.join(p.text for p in doc.paragraphs))"` to extract text.
 - Proceed to Step 2 with the extracted text.
 

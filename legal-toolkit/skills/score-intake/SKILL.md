@@ -46,7 +46,7 @@ Attempt to extract text from the PDF. If the extracted text is mostly empty (few
 
 > "This looks like a scanned document. I'll OCR it first, then score the intake call."
 
-Invoke `/legal-toolkit:extract-text` on the file. Once OCR completes, use the extracted text as the call transcript.
+**Delegate OCR to a subagent**: launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `{parent_dir}/{filename}_ocr.txt`." Once the agent completes, read the OCR output and use it as the call transcript.
 
 If the PDF has readable text, extract it and proceed to Step 2.
 

@@ -105,7 +105,7 @@ If yes:
 - **Path not found**: Ask user to verify the path
 - **Unsupported format**: Supported types are `.pdf`, `.docx`, `.txt`, `.md`
 - **Empty directory**: No supported files found -- ask user to check the folder
-- **Empty extraction**: File may be scanned/image-only; suggest OCR or a different format
+- **Empty extraction**: File may be scanned/image-only. **Delegate OCR to a subagent**: launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `{parent_dir}/{filename}_ocr.txt`." Re-run entity extraction on the OCR output.
 - **spaCy model not found**: Run `python3 -m spacy download en_core_web_sm`
 - **Low entity count**: Document may not contain recognizable entities; suggest reviewing raw text
 - **Script not found**: Verify the skill is installed (`ls $SKILL_DIR/scripts/`)

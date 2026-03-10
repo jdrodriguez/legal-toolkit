@@ -190,6 +190,6 @@ The .docx should contain:
 - **Path not found**: Ask user to verify the path
 - **Unsupported format**: Supported types are `.pdf`, `.docx`, `.txt`, `.md`
 - **Empty directory**: No supported files found — ask user to check the folder
-- **Empty extraction**: File may be scanned/image-only; suggest OCR
+- **Empty extraction**: File may be scanned/image-only. **Delegate OCR to a subagent**: launch an Agent (`subagent_type: "general-purpose"`) with prompt: "Run `/legal-toolkit:extract-text` on `{file_path}` and write the extracted text to `$WORK_DIR/{filename}_ocr.txt`." Re-run chunking on the OCR output.
 - **Agent failure**: Read the unprocessed chunks directly and summarize yourself
 - **Script not found**: Verify the skill is installed (`ls $SKILL_DIR/scripts/`)
