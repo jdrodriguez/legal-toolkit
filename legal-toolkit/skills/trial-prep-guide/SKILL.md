@@ -24,9 +24,9 @@ If no connector is available, proceed directly to the existing input flow.
 This skill has no Python scripts. All processing is done by Claude directly.
 Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent directory.
 
-## Agent Delegation (Required)
+## Agent Delegation
 
-This skill produces a 10-section trial notebook that will exceed a single agent's context window. You MUST delegate the analysis work to subagents. Do NOT attempt to build all 10 sections yourself.
+After completing Steps 1-3 (validate input, confirm jurisdiction, identify reference materials), assess the case materials and decide how many subagents to launch. Do NOT attempt to build all 10 sections yourself — delegate the analysis work.
 
 ### Orchestrator Workflow
 
@@ -35,7 +35,27 @@ This skill produces a 10-section trial notebook that will exceed a single agent'
    - Write all extracted document text to `$WORK_DIR/case_materials.md` with clear `## Source: {filename}` headers per document.
    - Write jurisdiction, charges, defendant info, reference material notes, and any user context to `$WORK_DIR/case_context.md`.
    - Run `mkdir -p "$WORK_DIR/sections"`.
-3. **Launch 5 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`). Each agent reads `case_materials.md` and `case_context.md`, then writes its assigned sections following the format specifications in Step 4:
+3. **Choose delegation strategy** based on `case_materials.md` size:
+
+#### Small case (under 500 lines — e.g., arrest report only)
+Use **2 agents**:
+
+| Agent | Sections | Output File | Max Length |
+|-------|----------|-------------|------------|
+| 1 | Sections 1-5 (Snapshot, Chronology, Witnesses, NHTSA, Evidence) | `$WORK_DIR/sections/sections_1_5.md` | 300 lines |
+| 2 | Sections 6-10 (Inconsistencies, Chemical Test, Motions, Next Steps, Strategy) | `$WORK_DIR/sections/sections_6_10.md` | 250 lines |
+
+#### Medium case (500-1500 lines — e.g., arrest report + body cam + 1-2 witness statements)
+Use **3 agents**:
+
+| Agent | Sections | Output File | Max Length |
+|-------|----------|-------------|------------|
+| 1 | Sections 1-3 (Snapshot, Chronology, Witnesses) | `$WORK_DIR/sections/sections_1_3.md` | 250 lines |
+| 2 | Sections 4-7 (NHTSA, Evidence, Inconsistencies, Chemical Test) | `$WORK_DIR/sections/sections_4_7.md` | 250 lines |
+| 3 | Sections 8-10 (Motions, Next Steps, Strategy) | `$WORK_DIR/sections/sections_8_10.md` | 200 lines |
+
+#### Large case (over 1500 lines — e.g., full discovery package with multiple witnesses, experts, body cam, lab reports)
+Use **5 agents**:
 
 | Agent | Sections | Output File | Max Length |
 |-------|----------|-------------|------------|
@@ -45,7 +65,7 @@ This skill produces a 10-section trial notebook that will exceed a single agent'
 | 4 | Inconsistencies + Chemical Test (6-7) | `$WORK_DIR/sections/sections_6_7.md` | 150 lines |
 | 5 | Motions + Next Steps + Strategy (8-10) | `$WORK_DIR/sections/sections_8_10.md` | 200 lines |
 
-4. **Include in each agent's prompt**: Copy the relevant section format specifications from the `## Step 4: Build the Trial Prep Guide` section below into the agent's prompt so it knows the exact output format. Also include these instructions verbatim:
+4. **Launch agents in parallel** (Agent tool, `subagent_type: "general-purpose"`). Copy the relevant section format specifications from the `## Step 4: Build the Trial Prep Guide` section below into each agent's prompt. Also include these instructions verbatim:
 
 > Read `$WORK_DIR/case_materials.md` for the case documents and `$WORK_DIR/case_context.md` for case parameters. Write your sections to `{output_file}`.
 >
@@ -56,8 +76,8 @@ This skill produces a 10-section trial notebook that will exceed a single agent'
 > - **Stay within {max_length} lines.** This is a hard limit. Be concise — use bullet points, not multi-paragraph narratives. One sentence per bullet. Table cells must be 1-2 sentences max, never multi-paragraph.
 > - Prioritize the most important findings. A tight, actionable 3-page section is more useful than an exhaustive 15-page section. Attorneys skim trial notebooks — make every line count.
 
-5. **Collect and present**: After all agents complete, read section files in numerical order (1-2, 3, 4-5, 6-7, 8-10) and present the assembled trial prep guide. Do NOT re-analyze the case materials yourself — trust the subagent outputs.
-6. **Generate .docx**: After assembling the markdown, generate a formatted Word document using the npm `docx` package. Save to `{parent_dir}/{case_name}_Trial_Prep_Guide.docx`. Use professional styling: Arial font, proper heading hierarchy, consistent spacing, page breaks between major sections, header with case name, footer with page numbers.
+5. **Collect and assemble**: After all agents complete, read section files in numerical order and assemble the trial prep guide. Do NOT re-analyze the case materials yourself — trust the subagent outputs.
+6. **Generate .docx**: Generate a formatted Word document using the npm `docx` package. Save to `{parent_dir}/{case_name}_Trial_Prep_Guide.docx`. Use professional styling: Arial font, proper heading hierarchy, consistent spacing, page breaks between major sections, header with case name, footer with page numbers.
 
 ## Step 1: Validate and Detect Input
 
