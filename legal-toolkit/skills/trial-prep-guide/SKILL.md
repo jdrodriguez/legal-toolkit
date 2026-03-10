@@ -57,7 +57,7 @@ This skill produces a 10-section trial notebook that will exceed a single agent'
 > - Prioritize the most important findings. A tight, actionable 3-page section is more useful than an exhaustive 15-page section. Attorneys skim trial notebooks — make every line count.
 
 5. **Collect and present**: After all agents complete, read section files in numerical order (1-2, 3, 4-5, 6-7, 8-10) and present the assembled trial prep guide. Do NOT re-analyze the case materials yourself — trust the subagent outputs.
-6. **Offer .docx export**: After presenting, offer to generate a formatted Word document.
+6. **Generate .docx**: After assembling the markdown, generate a formatted Word document using the npm `docx` package. Save to `{parent_dir}/{case_name}_Trial_Prep_Guide.docx`. Use professional styling: Arial font, proper heading hierarchy, consistent spacing, page breaks between major sections, header with case name, footer with page numbers.
 
 ## Step 1: Validate and Detect Input
 
