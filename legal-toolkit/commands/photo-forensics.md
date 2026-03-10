@@ -9,6 +9,11 @@ Analyze evidence photos for EXIF metadata, GPS coordinates, timestamps, camera i
 
 @$1
 
+Examples:
+- `/legal-toolkit:photo-forensics ~/cases/martinez/scene-photos/`
+- `/legal-toolkit:photo-forensics ~/evidence/vehicle-damage-IMG_4521.jpg`
+- `/legal-toolkit:photo-forensics ~/cases/johnson/arrest-scene/bodycam-stills/`
+
 ## Workflow
 
 - **Validate** the input directory and identify supported image files (.jpg, .jpeg, .png, .tiff, .tif, .heic)

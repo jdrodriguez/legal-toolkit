@@ -9,6 +9,11 @@ Audit law firm billing data (LEDES files, Excel invoices, CSV time entries) for 
 
 @$1
 
+Examples:
+- `/legal-toolkit:billing-audit ~/billing/march-2024-invoices.csv`
+- `/legal-toolkit:billing-audit ~/billing/ledes-export-Q1-2024.txt`
+- `/legal-toolkit:billing-audit ~/billing/outside-counsel-invoices/ -- check for block billing and excessive research`
+
 ## Workflow
 
 - **Validate** the input path (file or directory) and check for supported formats (.txt, .ledes, .xlsx, .csv)

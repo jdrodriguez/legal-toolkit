@@ -9,6 +9,11 @@ Analyze communication datasets to build relationship networks, detect communitie
 
 @$1
 
+Examples:
+- `/legal-toolkit:comm-patterns ~/cases/martinez/text-messages-export.csv`
+- `/legal-toolkit:comm-patterns ~/ediscovery/email-metadata.csv -- look for communication gaps around March 15`
+- `/legal-toolkit:comm-patterns ~/cases/johnson/call-logs.xlsx ~/cases/johnson/text-messages.csv`
+
 ## Workflow
 
 - **Validate** the input path (file or directory) and check for supported formats (.csv, .xlsx)

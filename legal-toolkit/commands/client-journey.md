@@ -9,6 +9,11 @@ Map how clients move through your firm from first contact through post-case, ide
 
 @$1
 
+Examples:
+- `/legal-toolkit:client-journey criminal defense firm, DUI practice area`
+- `/legal-toolkit:client-journey personal injury firm, high-volume intake`
+- `/legal-toolkit:client-journey family law practice, divorce and custody cases`
+
 ## Workflow
 
 - **Gather inputs**: practice area, current process description, client feedback (if available), firm size/roles, and tools in use

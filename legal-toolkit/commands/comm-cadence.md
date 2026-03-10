@@ -9,6 +9,11 @@ Design a structured communication calendar that keeps clients informed, reduces 
 
 @$1
 
+Examples:
+- `/legal-toolkit:comm-cadence criminal defense, DUI cases, 90-day pre-trial period`
+- `/legal-toolkit:comm-cadence personal injury, litigation phase, 6-month timeline`
+- `/legal-toolkit:comm-cadence estate planning, trust administration, new client onboarding`
+
 ## Workflow
 
 - **Gather inputs**: practice area/case type, estimated timeline, preferred contact frequency, available channels, client anxiety level, and case complexity

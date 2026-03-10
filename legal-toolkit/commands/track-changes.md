@@ -9,6 +9,11 @@ Generate Word documents with native tracked-changes markup from two contract ver
 
 @$1
 
+Examples:
+- `/legal-toolkit:track-changes ~/contracts/vendor-agreement-original.docx ~/contracts/vendor-agreement-revised.docx`
+- `/legal-toolkit:track-changes ~/cases/plea-offer-v1.pdf ~/cases/plea-offer-v2.pdf`
+- `/legal-toolkit:track-changes ~/agreements/retainer-template.docx ~/agreements/retainer-signed.docx`
+
 ## Workflow
 
 - **Validate** two .docx file paths (original and revised contracts)

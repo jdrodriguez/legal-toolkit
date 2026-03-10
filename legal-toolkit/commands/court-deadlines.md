@@ -9,6 +9,11 @@ Calculate litigation deadlines with FRCP Rule 6 compliance, jurisdiction-aware h
 
 @$1
 
+Examples:
+- `/legal-toolkit:court-deadlines arraignment 2024-04-15, Florida state court`
+- `/legal-toolkit:court-deadlines filing date 2024-03-01, federal court, Eastern District of New York`
+- `/legal-toolkit:court-deadlines trial date 2024-09-15, California Superior Court, criminal case`
+
 ## Workflow
 
 - **Collect** case details: trigger date (YYYY-MM-DD), jurisdiction (federal, CA, NY, TX, FL, IL), event type (complaint_served, motion_filed, discovery_request, summary_judgment, appeal_filed), and service method

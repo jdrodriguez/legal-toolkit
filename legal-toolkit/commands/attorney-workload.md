@@ -9,6 +9,11 @@ Analyze attorney workloads across the firm using case data and complexity weight
 
 @$1
 
+Examples:
+- `/legal-toolkit:attorney-workload ~/reports/active-cases-by-attorney.csv`
+- `/legal-toolkit:attorney-workload ~/data/clio-docket-export.xlsx -- flag anyone over 40 active cases`
+- `/legal-toolkit:attorney-workload ~/reports/case-assignments-Q1-2024.csv`
+
 ## Workflow
 
 - **Detect input format** -- if the user provides a spreadsheet or data file (.xlsx, .csv, .json), read and parse it; if they paste text or describe their caseload, extract structured data directly

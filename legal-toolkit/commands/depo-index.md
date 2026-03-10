@@ -9,6 +9,11 @@ Transcribe deposition recordings with timestamps, speaker identification, topic 
 
 @$1
 
+Examples:
+- `/legal-toolkit:depo-index ~/cases/johnson/depositions/officer-smith-depo.mp4`
+- `/legal-toolkit:depo-index ~/cases/martinez/expert-deposition-2024-03-20.mp3`
+- `/legal-toolkit:depo-index ~/depositions/dr-thompson-toxicology.wav`
+
 ## Workflow
 
 - **Validate** the input file and check supported formats (.mp4, .mov, .avi, .mkv, .wav, .mp3, .m4a, etc.)

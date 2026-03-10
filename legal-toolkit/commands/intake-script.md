@@ -9,6 +9,11 @@ Build intake call scripts that adapt based on charge type, case facts, caller de
 
 @$1
 
+Examples:
+- `/legal-toolkit:intake-script DUI/DWI cases in Florida`
+- `/legal-toolkit:intake-script personal injury -- auto accidents, slip and fall`
+- `/legal-toolkit:intake-script criminal defense -- drug possession, domestic violence`
+
 ## Workflow
 
 - **Detect input type** and preprocess: audio/video files chain to `/legal-toolkit:transcription`, PDF/DOCX files get text extracted, plain text is used directly, or proceed from a description alone

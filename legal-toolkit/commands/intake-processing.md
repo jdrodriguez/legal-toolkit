@@ -9,6 +9,11 @@ Process raw client intake data into structured legal intake outputs. Handles fre
 
 @$1
 
+Examples:
+- `/legal-toolkit:intake-processing ~/intake/new-client-form-johnson.pdf`
+- `/legal-toolkit:intake-processing ~/intake/march-2024-submissions/`
+- `/legal-toolkit:intake-processing ~/intake/garcia-consultation-notes.docx ~/intake/garcia-questionnaire.pdf`
+
 ## Workflow
 
 - **Validate** the input file and check for supported formats (.txt, .md, .json, .docx, .csv)

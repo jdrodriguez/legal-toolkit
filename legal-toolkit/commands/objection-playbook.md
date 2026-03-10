@@ -9,6 +9,11 @@ Build response playbooks that help intake reps handle prospect objections with e
 
 @$1
 
+Examples:
+- `/legal-toolkit:objection-playbook ~/recordings/intake-calls-lost-last-month/`
+- `/legal-toolkit:objection-playbook "too expensive" "I need to think about it" "I'm talking to other lawyers"`
+- `/legal-toolkit:objection-playbook ~/cases/lost-leads/call-notes-march-2024.txt`
+
 ## Workflow
 
 - **Detect input type** and preprocess: audio/video files chain to `/legal-toolkit:transcription` first, PDFs/DOCX get text extracted, plain text proceeds directly

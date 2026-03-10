@@ -9,6 +9,11 @@ Extract named entities (people, organizations, dates, monetary amounts, jurisdic
 
 @$1
 
+Examples:
+- `/legal-toolkit:entity-extraction ~/cases/johnson-dui/discovery/`
+- `/legal-toolkit:entity-extraction ~/cases/martinez/police-reports/ ~/cases/martinez/witness-statements/`
+- `/legal-toolkit:entity-extraction ~/cases/complex-fraud/full-document-set/`
+
 ## Workflow
 
 - **Validate** the input path (file or directory) and check for supported formats (.pdf, .docx, .txt, .md)

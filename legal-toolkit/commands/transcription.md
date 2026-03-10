@@ -9,6 +9,11 @@ Transcribe recordings using the local Whisper AI model. All processing is 100% l
 
 @$1
 
+Examples:
+- `/legal-toolkit:transcription ~/cases/johnson/bodycam-footage.mp4`
+- `/legal-toolkit:transcription ~/recordings/client-intake-call-2024-03-15.m4a`
+- `/legal-toolkit:transcription ~/cases/martinez/911-dispatch-audio.wav`
+
 ## Workflow
 
 - **Validate** the input file and check supported formats (.wav, .mp3, .m4a, .mp4, .mov, etc.)

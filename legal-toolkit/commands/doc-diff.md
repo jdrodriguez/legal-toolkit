@@ -9,6 +9,11 @@ Compare two legal documents (PDF, DOCX, TXT) and generate detailed visual diffs 
 
 @$1
 
+Examples:
+- `/legal-toolkit:doc-diff ~/contracts/lease-v1.pdf ~/contracts/lease-v2.pdf`
+- `/legal-toolkit:doc-diff ~/cases/johnson/original-report.docx ~/cases/johnson/amended-report.docx`
+- `/legal-toolkit:doc-diff ~/agreements/settlement-draft.docx ~/agreements/settlement-final.docx`
+
 ## Workflow
 
 - **Validate** two document paths (original and revised) with supported formats (.pdf, .docx, .txt)

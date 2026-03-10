@@ -9,6 +9,11 @@ Generate a complete DUI/DWI trial preparation notebook from case files. Reads ar
 
 @$1
 
+Examples:
+- `/legal-toolkit:trial-prep ~/cases/johnson-dui/full-case-file/`
+- `/legal-toolkit:trial-prep ~/cases/state-v-garcia/ -- BAC 0.09, HGN only, no body cam`
+- `/legal-toolkit:trial-prep ~/cases/martinez-dwi/arrest-report.pdf ~/cases/martinez-dwi/calibration-records.pdf`
+
 ## Workflow
 
 - **Detect input type**: file paths (PDF/DOCX/TXT/MD), directories, or pasted case details

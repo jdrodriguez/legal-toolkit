@@ -9,6 +9,11 @@ Score intake call transcripts against a structured rubric for criminal defense f
 
 @$1
 
+Examples:
+- `/legal-toolkit:intake-scorecard ~/recordings/intake-call-johnson-2024-03-15.mp3`
+- `/legal-toolkit:intake-scorecard ~/cases/new-leads/garcia-consultation-notes.txt`
+- `/legal-toolkit:intake-scorecard ~/recordings/intake-calls-this-week/`
+
 ## Workflow
 
 - **Detect input type** and preprocess: audio/video files are transcribed first via the `transcribe` skill, scanned PDFs are OCR'd first via the `ocr` skill, readable PDFs and text proceed directly

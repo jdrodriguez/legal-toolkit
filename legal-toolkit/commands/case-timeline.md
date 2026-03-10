@@ -9,6 +9,11 @@ Extract all dated events from legal documents, build an interactive timeline, de
 
 @$1
 
+Examples:
+- `/legal-toolkit:case-timeline ~/cases/johnson-dui/discovery/`
+- `/legal-toolkit:case-timeline ~/cases/martinez/police-report.pdf ~/cases/martinez/witness-statements/`
+- `/legal-toolkit:case-timeline ~/cases/state-v-williams/ -- focus on chain of custody for blood sample`
+
 ## Workflow
 
 - **Validate** the input path (file or directory) and check for supported formats (.pdf, .docx, .txt, .md)

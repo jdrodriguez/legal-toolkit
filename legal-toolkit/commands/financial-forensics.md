@@ -9,6 +9,11 @@ Ingest bank statements and transaction records, trace money flows between entiti
 
 @$1
 
+Examples:
+- `/legal-toolkit:financial-forensics ~/cases/martinez/bank-statements-2023/`
+- `/legal-toolkit:financial-forensics ~/cases/johnson-divorce/joint-account-records.csv ~/cases/johnson-divorce/credit-card-statements/`
+- `/legal-toolkit:financial-forensics ~/cases/fraud-investigation/quickbooks-export.xlsx`
+
 ## Workflow
 
 - **Validate** the input path (file or directory) and check for supported formats (.csv, .xlsx, .ofx, .qfx)

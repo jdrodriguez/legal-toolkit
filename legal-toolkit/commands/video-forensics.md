@@ -9,6 +9,11 @@ Analyze video files frame-by-frame for forensic review. Extracts frames using sc
 
 @$1
 
+Examples:
+- `/legal-toolkit:video-forensics ~/cases/johnson/bodycam-BWC-2024-0315.mp4`
+- `/legal-toolkit:video-forensics ~/evidence/surveillance-parking-lot.mp4 --interval 5`
+- `/legal-toolkit:video-forensics ~/cases/martinez/dashcam-footage.mkv`
+
 ## Workflow
 
 - **Validate** the input video file and check that ffmpeg is available

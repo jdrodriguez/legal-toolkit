@@ -9,6 +9,11 @@ Transform raw case data into a structured performance dashboard with KPIs, perio
 
 @$1
 
+Examples:
+- `/legal-toolkit:firm-kpis ~/reports/clio-case-export-Q1-2024.csv`
+- `/legal-toolkit:firm-kpis ~/data/case-outcomes-2023.xlsx ~/data/billing-summary-2023.csv`
+- `/legal-toolkit:firm-kpis ~/reports/monthly-intake-data-march-2024.csv`
+
 ## Workflow
 
 - **Detect input format** -- if the user provided a spreadsheet (CSV, XLSX), PDF, or text, parse and extract the case data accordingly

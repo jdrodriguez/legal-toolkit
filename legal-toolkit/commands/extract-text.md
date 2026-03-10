@@ -9,6 +9,11 @@ Extract text from scanned PDFs and images using PaddleOCR (primary) with pytesse
 
 @$1
 
+Examples:
+- `/legal-toolkit:extract-text ~/cases/johnson/scanned-arrest-report.pdf`
+- `/legal-toolkit:extract-text ~/discovery/handwritten-witness-statement.jpg`
+- `/legal-toolkit:extract-text ~/cases/martinez/faxed-medical-records/`
+
 ## Workflow
 
 - **Validate** the input path (file or directory) and check for supported formats (.pdf, .png, .jpg, .jpeg, .tiff, .tif, .bmp)

@@ -9,6 +9,11 @@ Parse email archives, reconstruct threads, detect duplicates, flag potentially p
 
 @$1
 
+Examples:
+- `/legal-toolkit:email-discovery ~/ediscovery/client-emails-export.mbox`
+- `/legal-toolkit:email-discovery ~/cases/martinez/outlook-export/ -- focus on communications with co-defendant`
+- `/legal-toolkit:email-discovery ~/ediscovery/johnson-corp/email-archive.pst`
+
 ## Workflow
 
 - **Validate** the input path and check for supported formats (.eml, .msg, .mbox, or directories of email files)

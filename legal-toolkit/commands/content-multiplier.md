@@ -9,6 +9,11 @@ Take one piece of source content and produce 12+ derivative outputs across socia
 
 @$1
 
+Examples:
+- `/legal-toolkit:content-multiplier ~/blog/dui-checkpoint-rights-article.md`
+- `/legal-toolkit:content-multiplier ~/recordings/podcast-episode-23-criminal-defense-tips.mp3`
+- `/legal-toolkit:content-multiplier ~/content/what-to-do-after-arrest-blog-post.docx`
+
 ## Workflow
 
 - **Detect input type** -- if audio/video, chain to `/legal-toolkit:transcription` first; if PDF/DOCX, extract text; if text or URL, proceed directly

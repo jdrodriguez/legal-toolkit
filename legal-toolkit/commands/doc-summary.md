@@ -9,6 +9,11 @@ Chunk large documents or directories of documents and coordinate agent teams for
 
 @$1
 
+Examples:
+- `/legal-toolkit:doc-summary ~/cases/johnson-v-smith/discovery/`
+- `/legal-toolkit:doc-summary ~/Documents/opposing-counsel-brief.pdf`
+- `/legal-toolkit:doc-summary ~/cases/martinez/expert-reports/biomechanics-report.docx`
+
 ## Workflow
 
 - **Validate** the input path (single file or directory) and check for supported formats (.pdf, .docx, .txt, .md)

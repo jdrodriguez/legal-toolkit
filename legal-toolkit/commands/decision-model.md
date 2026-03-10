@@ -9,6 +9,11 @@ Analyze a business decision for a law firm owner. Produces a structured analysis
 
 @$1
 
+Examples:
+- `/legal-toolkit:decision-model Should we hire a second associate or a paralegal?`
+- `/legal-toolkit:decision-model Evaluate opening a satellite office in Tampa vs. staying single-location`
+- `/legal-toolkit:decision-model Take on a complex federal case -- high profile but 200+ hours, no guarantee of payment`
+
 ## Workflow
 
 - **Clarify** the decision and gather context — what is being decided, why now, and what constraints exist (budget, timeline, risk tolerance)

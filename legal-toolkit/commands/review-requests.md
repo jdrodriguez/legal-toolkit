@@ -9,6 +9,11 @@ Generate personalized, ethics-compliant review request scripts based on case dis
 
 @$1
 
+Examples:
+- `/legal-toolkit:review-requests DUI case, acquittal, client was very happy with outcome`
+- `/legal-toolkit:review-requests personal injury settlement, $450K recovery, 8-month case`
+- `/legal-toolkit:review-requests criminal defense, charges dismissed, client relieved`
+
 ## Workflow
 
 - **Gather inputs**: case disposition, practice area, client relationship quality, target platforms, firm/attorney name, and optional state for ethics rules

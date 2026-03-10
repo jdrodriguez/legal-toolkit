@@ -9,6 +9,11 @@ Produce a recommended retainer range for a criminal defense case based on charge
 
 @$1
 
+Examples:
+- `/legal-toolkit:case-pricing DUI first offense, BAC 0.12, Florida`
+- `/legal-toolkit:case-pricing felony drug possession, prior record, federal court`
+- `/legal-toolkit:case-pricing domestic violence misdemeanor, no priors, contested`
+
 ## Workflow
 
 - **Classify** the case by charge tier (infraction through serious felony), complexity level, and estimated lifecycle

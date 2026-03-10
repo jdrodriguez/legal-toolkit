@@ -9,6 +9,11 @@ Analyze criminal defense case files and produce a strategic defense playbook. Ac
 
 @$1
 
+Examples:
+- `/legal-toolkit:case-playbook ~/cases/johnson-dui/discovery/`
+- `/legal-toolkit:case-playbook ~/cases/state-v-martinez/ -- charged with assault 2nd degree, self-defense claim`
+- `/legal-toolkit:case-playbook ~/cases/williams/charging-documents.pdf ~/cases/williams/witness-statements/`
+
 ## Workflow
 
 - **Detect input type**: file paths (PDF/DOCX/TXT/MD), directories, or pasted case details

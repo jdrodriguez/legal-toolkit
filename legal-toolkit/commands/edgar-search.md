@@ -9,6 +9,11 @@ Research SEC EDGAR public filings for companies, extracting financial data, offi
 
 @$1
 
+Examples:
+- `/legal-toolkit:edgar-search Tesla 10-K filings from 2023`
+- `/legal-toolkit:edgar-search Acme Corp insider trading disclosures`
+- `/legal-toolkit:edgar-search "Johnson & Johnson" proxy statements`
+
 ## Workflow
 
 - **Validate** the company name or CIK number, and optionally collect filing types and lookback period

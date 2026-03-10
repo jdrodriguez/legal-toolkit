@@ -9,6 +9,11 @@ Draft complete criminal defense motions (suppress, dismiss, exclude, limine, com
 
 @$1
 
+Examples:
+- `/legal-toolkit:motion ~/cases/johnson-dui/ -- suppress breath test, observation period violated`
+- `/legal-toolkit:motion ~/cases/martinez/discovery/ -- motion to dismiss, speedy trial violation`
+- `/legal-toolkit:motion ~/cases/williams/ -- motion in limine to exclude prior convictions`
+
 ## Workflow
 
 - **Gather inputs** -- identify case documents, motion type, optional template, jurisdiction, and drafting preferences

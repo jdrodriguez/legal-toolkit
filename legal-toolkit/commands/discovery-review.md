@@ -9,6 +9,11 @@ Analyze police reports, body cam transcripts, witness statements, lab results, a
 
 @$1
 
+Examples:
+- `/legal-toolkit:discovery-review ~/cases/johnson-dui/discovery/`
+- `/legal-toolkit:discovery-review ~/cases/martinez/police-report.pdf ~/cases/martinez/bodycam-transcript.txt`
+- `/legal-toolkit:discovery-review ~/cases/state-v-williams/full-discovery-package/`
+
 ## Workflow
 
 - **Detect input type** -- if scanned PDFs, chain to OCR skill first; if audio/video, chain to transcribe skill first; if document files, extract text; if pasted text, proceed directly
