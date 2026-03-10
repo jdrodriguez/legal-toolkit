@@ -38,13 +38,21 @@ For large email archives (**100+ emails**), delegate result analysis to avoid co
 1. **You handle**: Steps 1-4 below (validate, check deps, configure options, run processing).
 2. **After processing completes**, launch **3 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`). Substitute the resolved `$OUTPUT_DIR` path literally into each agent's prompt — do not pass shell variable names:
 
-| Agent | Task | Output File |
-|-------|------|-------------|
-| 1 | Analyze `privilege_flags.xlsx` — present flagged items with date, from, to, subject, flag reason | `$OUTPUT_DIR/privilege_analysis.md` |
-| 2 | Analyze `threads.json` and `communication_network.html` — summarize thread patterns and key relationships | `$OUTPUT_DIR/thread_analysis.md` |
-| 3 | Analyze `duplicates.xlsx` and `processing_summary.txt` — compile statistics and duplicate findings | `$OUTPUT_DIR/stats_analysis.md` |
+| Agent | Task | Output File | Max Length |
+|-------|------|-------------|------------|
+| 1 | Analyze `privilege_flags.xlsx` — present flagged items with date, from, to, subject, flag reason | `$OUTPUT_DIR/privilege_analysis.md` | 80 lines |
+| 2 | Analyze `threads.json` and `communication_network.html` — summarize thread patterns and key relationships | `$OUTPUT_DIR/thread_analysis.md` | 80 lines |
+| 3 | Analyze `duplicates.xlsx` and `processing_summary.txt` — compile statistics and duplicate findings | `$OUTPUT_DIR/stats_analysis.md` | 60 lines |
 
-3. **Include in each agent's prompt**: "Read the specified files from `$OUTPUT_DIR`. Write a clear analysis summary to `{output_file}`. For privilege flags, emphasize these are automated flags requiring human review."
+3. **Include in each agent's prompt** (verbatim):
+
+> Read the specified files from `$OUTPUT_DIR`. Write a clear analysis summary to `{output_file}`.
+>
+> **Output rules — follow strictly:**
+> - Do NOT add a title page, case header, or section-group heading. Start directly with your assigned analysis section. The orchestrator will assemble all sections.
+> - Stay within {max_length} lines. Be concise — use tables and bullet points, not multi-paragraph narratives. Table cells must be 1-2 sentences max.
+> - Prioritize the most important findings for litigation. Omit boilerplate and filler.
+> - For privilege flags, emphasize these are automated flags requiring human review.
 4. **Collect and present**: Read analysis files, compile findings, and present to the user per Steps 5-7.
 
 ## Process

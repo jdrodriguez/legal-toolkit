@@ -33,14 +33,23 @@ For cases with **5+ source documents** or **multiple motions requested**, delega
    - Run `mkdir -p "$WORK_DIR/sections"`.
 3. **For a single motion**, launch **2 subagents in parallel**:
 
-| Agent | Task | Output File |
-|-------|------|-------------|
-| 1 | Caption + Statement of Facts + Evidence References (3a, 3b, 3e) | `$WORK_DIR/sections/motion_facts.md` |
-| 2 | Legal Standard + Argument + Prayer for Relief (3c, 3d, 3f) | `$WORK_DIR/sections/motion_law.md` |
+| Agent | Task | Max Lines | Output File |
+|-------|------|-----------|-------------|
+| Facts Agent | Caption + Statement of Facts + Evidence References (3a, 3b, 3e) | 200 | `$WORK_DIR/sections/motion_facts.md` |
+| Law Agent | Legal Standard + Argument + Prayer for Relief (3c, 3d, 3f) | 250 | `$WORK_DIR/sections/motion_law.md` |
 
-4. **For multiple motions**, launch **one agent per motion**, each drafting a complete motion and writing to `$WORK_DIR/sections/motion_{type}.md`.
-5. **Include in each agent's prompt**: Copy the relevant format specifications from the `## Step 3: Draft the Motion` section below. Also include: "Read `$WORK_DIR/case_materials.md` and `$WORK_DIR/motion_context.md`. Follow the template if provided. Fill all caption fields from the case file — use [FILL] for missing values. Mark all case law as [VERIFY]. Write output to `{output_file}`."
-6. **Collect and assemble**: Read output files in order — `motion_facts.md` first (caption, statement of facts, evidence references), then `motion_law.md` (legal standard, argument, prayer for relief). Merge into a single complete motion document. Present with the gaps/verification checklist from Step 4.
+4. **For multiple motions**, launch **one agent per motion**, each drafting a complete motion (max 400 lines) and writing to `$WORK_DIR/sections/motion_{type}.md`.
+5. **Include in each agent's prompt** — copy the relevant format specifications from the `## Step 3: Draft the Motion` section below, **plus all of the following rules verbatim**:
+
+   > **Subagent Output Rules (mandatory)**
+   >
+   > - Do NOT add a title page or redundant motion heading. Start directly with your assigned section (facts or law). The orchestrator will assemble the final motion.
+   > - Stay within {max_lines} lines. Be concise and precise — courts have page limits and verbosity weakens arguments.
+   > - Do not duplicate content that belongs in the other agent's section. The facts agent must not argue law; the law agent must not restate the factual narrative.
+   > - No preamble, no meta-commentary, no "Here is the draft" wrapper text. Output only the motion content itself.
+   > - Read `$WORK_DIR/case_materials.md` and `$WORK_DIR/motion_context.md`. Follow the template if provided. Fill all caption fields from the case file — use [FILL] for missing values. Mark all case law as [VERIFY]. Write output to `{output_file}`.
+
+6. **Collect and assemble**: Read output files in order — `motion_facts.md` first (caption, statement of facts, evidence references), then `motion_law.md` (legal standard, argument, prayer for relief). Merge into a single complete motion document. **Trim any duplicated content or boilerplate that agents may have added despite instructions.** Present with the gaps/verification checklist from Step 4.
 
 ## Step 1: Gather Inputs
 
@@ -167,7 +176,7 @@ Ask: "Want me to revise any sections, strengthen specific arguments, adjust the 
 - **Facts come from the case file, not from training data.** Do not add facts, dates, or details not present in the case documents. If the police report does not mention Miranda warnings, do not assume they were or were not given -- flag it as [NEEDS INVESTIGATION].
 - **Follow the template structure.** If the firm provided a template, match its section order, heading style, and formatting unless explicitly told otherwise.
 - **Write in the firm's voice.** If the firm writes assertively ("The officer violated..."), match that. If the firm writes formally ("The evidence demonstrates that..."), match that. Review any prior motions for voice calibration.
-- **Target the firm's typical page length.** If the firm's motions to suppress run 8-12 pages, produce 8-12 pages. Do not produce a 3-page summary when the firm files 10-page motions.
+- **Target the firm's typical page length.** If the firm's motions to suppress run 8-12 pages, produce 8-12 pages. Do not produce a 3-page summary when the firm files 10-page motions. When delegating, enforce per-agent line limits (200 for facts, 250 for law, 400 for full single-agent motions) to prevent output bloat. The assembled motion should not exceed the firm's typical page count; trim during assembly if needed.
 
 ## Supported Motion Types
 

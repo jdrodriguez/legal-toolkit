@@ -19,6 +19,8 @@ Resolve `SKILL_DIR` as the absolute path of this SKILL.md file's parent director
 
 This skill produces a 9-section defense memo that will exceed a single agent's context window. You MUST delegate the analysis to subagents. Do NOT attempt to build all 9 sections yourself.
 
+**Target output: ~300 lines total.** Each subagent has a hard line limit. A tight, actionable memo is more useful than an exhaustive one.
+
 ### Orchestrator Workflow
 
 1. **You handle**: Steps 1-2 below (detect input type, extract text, identify reference materials).
@@ -28,14 +30,24 @@ This skill produces a 9-section defense memo that will exceed a single agent's c
    - Run `mkdir -p "$WORK_DIR/sections"`.
 3. **Launch 4 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`):
 
-| Agent | Sections | Output File |
-|-------|----------|-------------|
-| 1 | Case Snapshot + Chronology + Evidence Inventory (1-3) | `$WORK_DIR/sections/sections_1_3.md` |
-| 2 | Officer Conduct + NHTSA Compliance (4-5) | `$WORK_DIR/sections/sections_4_5.md` |
-| 3 | Statutory Analysis + Inconsistencies (6-7) | `$WORK_DIR/sections/sections_6_7.md` |
-| 4 | Motion Opportunities + Next Steps (8-9) | `$WORK_DIR/sections/sections_8_9.md` |
+| Agent | Sections | Output File | Max Length |
+|-------|----------|-------------|-----------|
+| 1 | Case Snapshot + Chronology + Evidence Inventory (1-3) | `$WORK_DIR/sections/sections_1_3.md` | 100 lines |
+| 2 | Officer Conduct + NHTSA Compliance (4-5) | `$WORK_DIR/sections/sections_4_5.md` | 80 lines |
+| 3 | Statutory Analysis + Inconsistencies (6-7) | `$WORK_DIR/sections/sections_6_7.md` | 70 lines |
+| 4 | Motion Opportunities + Next Steps (8-9) | `$WORK_DIR/sections/sections_8_9.md` | 50 lines |
 
-4. **Include in each agent's prompt**: Copy the relevant section specifications from Step 3 below into the prompt. Also include: "Read `$WORK_DIR/case_materials.md` and `$WORK_DIR/case_context.md`. Analyze for the defense. Cite sources with page numbers and timestamps. Quote exact language for inconsistencies — do not paraphrase. Flag case law as [CASE LAW RESEARCH NEEDED] and gaps as [NEEDS INVESTIGATION]. Write output to `{output_file}`."
+4. **Include in each agent's prompt**: Copy the relevant section specifications from Step 3 below into the prompt. Also include these rules verbatim (substitute `{max_length}` and `{output_file}` for the values from the table above):
+
+   > **Rules:**
+   > - Cite source documents throughout. Flag all case law as [VERIFY] and missing info as [NEEDS INVESTIGATION].
+   > - Be a defense attorney, not a neutral summarizer.
+   > - **Do NOT add a title page, case header, or section-group heading.** Start directly with the first section heading. The orchestrator will assemble all sections into the final document.
+   > - **Stay within {max_length} lines.** This is a hard limit. Be concise — use bullet points, not multi-paragraph narratives. One sentence per bullet. Table cells must be 1-2 sentences max, never multi-paragraph.
+   > - Prioritize the most important findings. A tight, actionable analysis is more useful than an exhaustive one.
+   >
+   > Read `$WORK_DIR/case_materials.md` and `$WORK_DIR/case_context.md`. Write output to `{output_file}`.
+
 5. **Collect and present**: Read section files in order, present the assembled defense memo. Do NOT re-analyze the case materials yourself.
 
 ## Context
@@ -94,74 +106,86 @@ Analyze all extracted text and produce the following sections. **Follow the Agen
 
 ### Section 1: Case Snapshot
 
-One-page summary: defendant name, DOB, charges with statutory citations, arrest date/time, arrest location, arresting agency, officer name and badge number, court and case number, BAC result (if available), and a two-sentence preliminary defense theory based on the file. This is the cover page.
+Key facts in a compact list: defendant name, DOB, charges with statutory citations, arrest date/time, location, arresting agency, officer/badge, court/case number, BAC (if available). End with a two-sentence preliminary defense theory. Keep to ~15 lines.
 
 ### Section 2: Chronology
 
-Detailed timeline from initial observation through booking. Every entry cites the source document and page number, body cam timestamp, or witness statement paragraph. When two sources describe the same event differently, include both versions and flag the conflict.
+Timeline from initial observation through booking. Each entry: one-line event description, source citation, and conflict flag if sources disagree. Only include events with defense significance — skip routine procedural steps unless a deviation occurred.
 
-Format: Time | Event | Source (page/timestamp) | Conflicts/Notes
+Format: Time | Event (1 sentence) | Source (page/timestamp) | Conflicts/Notes (1 sentence max)
 
 ### Section 3: Evidence Inventory
 
-Catalog every piece of evidence in the discovery package:
+Catalog evidence in the discovery package. One row per item, cells kept to a few words each.
 
-| Item | Type | Source | Key Content | Status |
-|------|------|--------|-------------|--------|
+| Item | Type | Source | Key Content (1 phrase) | Status |
+|------|------|--------|------------------------|--------|
 
-Status should be: Complete, Partial, Referenced But Missing, or Needs Follow-Up.
+Status: Complete, Partial, Referenced But Missing, or Needs Follow-Up.
 
 ### Section 4: Officer Conduct Review
 
-Review all officer actions documented in the file for procedural compliance:
-- Miranda warnings: when given, exact language if documented, any waiver
+Bullet-point review of officer procedural compliance. One bullet per issue, cite the source, note the defense angle. Only expand on items where a deviation or gap exists.
+- Miranda warnings: timing, language, waiver
 - Probable cause for stop and arrest
-- Search and seizure details
-- Chain of custody for physical evidence
-- Documentation completeness
+- Search and seizure
+- Chain of custody
+- Documentation gaps
 
 ### Section 5: NHTSA Compliance Cross-Reference
 
-For each field sobriety test administered, compare officer conduct against NHTSA protocol. Cite specific NHTSA manual sessions and page numbers.
+Compare officer conduct against NHTSA protocol for each FST administered. Table cells must be 1-2 sentences max.
 
-| Test | What Officer Documented | NHTSA Requirement (Session/Page) | Deviation Identified | Defense Significance |
-|------|------------------------|----------------------------------|---------------------|---------------------|
+| Test | Officer Documented (1-2 sentences) | NHTSA Requirement (Session/Page) | Deviation (1 sentence) | Defense Significance (1 sentence) |
+|------|-----------------------------------|----------------------------------|----------------------|----------------------------------|
 
-Cover all three standardized tests if administered: HGN, Walk-and-Turn, One-Leg Stand. Flag any non-standardized tests (finger-to-nose, Romberg, alphabet) and note that NHTSA has not validated them as reliable indicators of impairment.
+Cover HGN, Walk-and-Turn, One-Leg Stand if administered. Flag non-standardized tests (finger-to-nose, Romberg, alphabet) with a one-line note that NHTSA has not validated them.
 
 ### Section 6: Statutory Analysis
 
-Map the evidence against each element of the charged offense under the applicable state statute. For each element: state the element, identify the supporting evidence (with page citations), assess strength (Strong / Weak / Unsupported), and note gaps the defense can exploit.
+Map evidence against each element of the charged offense. One row per element, keep cells concise.
+
+| Element | Evidence (cite page) | Strength | Defense Gap (1 sentence) |
+|---------|---------------------|----------|--------------------------|
+
+Strength: Strong / Weak / Unsupported.
 
 ### Section 7: Cross-Document Inconsistencies
 
-Compare every source document against every other source. Quote exact language -- do not paraphrase.
+Quote exact language -- do not paraphrase. Only include inconsistencies with defense significance. Keep quotes to the key phrase, not full sentences.
 
-| Issue | Source A (Quote, Page) | Source B (Quote, Page) | Defense Significance |
-|-------|----------------------|----------------------|---------------------|
+| Issue (1 phrase) | Source A (Quote, Page) | Source B (Quote, Page) | Defense Significance (1 sentence) |
+|------------------|----------------------|----------------------|----------------------------------|
 
-Look for: factual contradictions (times, descriptions, sequences), omissions (details in one document but absent from another), characterization differences (e.g., "slurred speech" in the report vs. coherent dialogue on body cam).
+Focus on: factual contradictions, omissions between documents, characterization differences (e.g., "slurred speech" vs. coherent dialogue on body cam).
 
 ### Section 8: Motion Opportunities
 
-Based on every issue identified above:
+One bullet per motion opportunity. Prioritize by strength -- list Strong motions first. Keep each entry to 2-3 lines max.
 
-- **Motion type:** Suppress, dismiss, exclude, limine
-- **Legal basis:** Constitutional provision, statute, or rule
-- **Key facts:** Specific evidence supporting the motion (with citations)
-- **Strength:** Strong / Moderate / Worth Filing -- with a one-sentence explanation
-- If motion templates are available in the project, reference them and map arguments to the template structure
+- **Format per motion:** Motion type (suppress/dismiss/exclude/limine) | Legal basis (1 phrase) | Key facts with citation | Strength (Strong / Moderate / Worth Filing) + 1-sentence rationale
+- Reference available motion templates if present in the project.
 
 ### Section 9: Recommended Next Steps
 
-Specific, actionable items:
+Prioritized bullet list of actionable items. One sentence per bullet. Group by category but do not elaborate beyond the action and its rationale.
 
-- Discovery requests to file (what to request and why)
-- Witnesses to interview or subpoena
-- Expert witnesses to retain (what kind, what question they address)
-- Evidence not yet in the file: dashcam, additional body cam angles, dispatch audio, calibration logs, maintenance records, officer training records
-- Investigation tasks: scene visit, lighting/visibility check, distance measurements
+- Discovery requests (what + why)
+- Witnesses to interview/subpoena
+- Expert witnesses (type + question they address)
+- Missing evidence to obtain (dashcam, body cam angles, dispatch audio, calibration logs, training records)
+- Investigation tasks (scene visit, measurements, etc.)
 
+
+## Output Format
+
+**Hard limit: ~300 lines for the assembled memo.** This is not a suggestion — exceeding it produces an unusable document. The per-agent limits in the delegation table enforce this. Conciseness rules:
+
+- **Bullet points over paragraphs.** One sentence per bullet. No multi-sentence narrative blocks.
+- **Table cells: 1-2 sentences max.** Never multi-paragraph. If a cell needs more, the content is not sufficiently distilled.
+- **No filler.** Omit introductory/concluding paragraphs within sections. Start each section with its first substantive item.
+- **Prioritize ruthlessly.** Include the top findings per section. A tight 300-line memo an attorney will actually read beats an exhaustive 1,300-line document they will not.
+- **No title page, table of contents, or preamble.** The document starts at Section 1.
 
 ## Accuracy and QA (Required)
 

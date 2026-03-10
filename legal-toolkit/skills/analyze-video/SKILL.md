@@ -24,11 +24,26 @@ Video analysis is extremely token-intensive — processing 50-500+ frames throug
 1. **You handle**: Steps 1-4 below (validate, check deps, warn user, extract frames).
 2. **After frame extraction**, read the chapter directory structure to get chapter count and frame counts per chapter.
 3. **Launch one subagent per chapter in parallel** (Agent tool, `subagent_type: "general-purpose"`). Run `mkdir -p "$OUTPUT_DIR/chapters"` first. Substitute the resolved `$OUTPUT_DIR` path literally into each agent's prompt — do not pass shell variable names. Each agent's prompt:
-   > "You are analyzing video frames for forensic review. Read `$OUTPUT_DIR/frames/chapter_{NNN}/metadata.json` for the chapter's time range. Then read all frame images in `$OUTPUT_DIR/frames/chapter_{NNN}/` in chronological order, in batches of 10-20.
+   > "You are analyzing video frames for forensic review.
    >
-   > For each frame, describe: visible elements, actions, environment, visible text, and changes from previous frame. Flag key moments: use of force, weapons, new individuals, evidence handling, restraints, camera shifts. Group similar consecutive frames into segments with timestamp ranges.
+   > **Hard constraints — violating any of these is a failure:**
+   > - **Max 100 lines** for your entire chapter analysis file. Do NOT exceed this.
+   > - Do NOT add a title page, case header, or section-group heading. Start directly with the chapter heading (e.g., `## Chapter 3 (04:00 - 06:00)`).
+   > - Stay within the line limit. Be concise — use bullet points, not multi-paragraph narratives. Table cells must be 1-2 sentences max.
+   > - Prioritize the most important findings. Omit routine/unremarkable frames entirely — only describe segments where something notable happens or changes.
+   > - Group consecutive similar frames aggressively into segments. Never describe individual frames when they can be grouped.
    >
-   > Write your analysis to `$OUTPUT_DIR/chapters/chapter_{NNN}_analysis.md` with: chapter summary, frame descriptions (grouped into segments), key moments table, and individuals observed."
+   > Read `$OUTPUT_DIR/frames/chapter_{NNN}/metadata.json` for the chapter's time range. Then read all frame images in `$OUTPUT_DIR/frames/chapter_{NNN}/` in chronological order, in batches of 10-20.
+   >
+   > For each notable segment, describe: visible elements, actions, environment, visible text, and changes from previous segment. Flag key moments: use of force, weapons, new individuals, evidence handling, restraints, camera shifts.
+   >
+   > Write your analysis to `$OUTPUT_DIR/chapters/chapter_{NNN}_analysis.md` with these sections only:
+   > 1. Chapter summary (2-4 sentences)
+   > 2. Segment descriptions (grouped frames with timestamp ranges, bullet points)
+   > 3. Key moments table (timestamp | event | significance — one row per moment)
+   > 4. Individuals observed (brief bullet list)
+   >
+   > If nothing notable happens in this chapter, write only the chapter summary stating that and a single line confirming no key moments. This is preferable to padding with routine observations."
 
 4. **Collect and compile**: After all chapter agents complete, read all `chapter_*_analysis.md` files. Assemble the forensic report (Step 6) from the chapter analyses — compile the timeline, key moments, individuals, and evidence notes. Write `forensic_report.md`. Do NOT re-analyze frames yourself.
 5. **Present**: Show Video Summary and Key Moments per Step 7.
@@ -117,31 +132,27 @@ The following instructions are the specifications each subagent follows. For eac
 
 2. **Batch frames in groups of 10-20** for efficient analysis with context continuity. Read each frame image in chronological order within the batch.
 
-3. **For each frame, describe:**
-   - **Visible elements**: People, objects, vehicles, furniture, text, badges, weapons, tools, evidence items
-   - **Actions**: Walking, talking, reaching, running, standing, sitting, gesturing, struggling, writing
-   - **Environment**: Indoor/outdoor, lighting conditions (bright, dim, dark, artificial), weather if visible, room type, location identifiers
-   - **Visible text**: Signs, documents, license plates, badges, name tags, timestamps overlaid on video
-   - **Changes from previous frame**: Movement, new elements, departures, posture changes, camera angle shifts
+3. **For each segment, describe concisely** (1-2 bullet points per segment, not per frame):
+   - **Notable elements**: People, weapons, evidence items, visible text (signs, badges, plates). Only list what matters forensically — skip routine/unchanging environmental details.
+   - **Actions and changes**: What happened or changed. One sentence per action.
+   - **Environment**: Only note on first appearance or when it changes. Do not repeat for every segment.
 
-4. **Flag key moments** — mark any frame containing:
-   - Use of force or physical contact between individuals
-   - Weapons drawn, displayed, or visible
-   - New individuals entering the scene
-   - Handcuffs, restraints, or detention actions
-   - Evidence handling (picking up, bagging, tagging, photographing)
-   - Doors opening or closing, entering/exiting vehicles or buildings
-   - Gestures that may indicate distress, compliance, or resistance
-   - Sudden camera movement or perspective shifts (especially for body cam)
+4. **Flag key moments** — mark any segment containing:
+   - Use of force, weapons, restraints, or detention actions
+   - New individuals entering or evidence handling
+   - Distress, resistance, or sudden camera shifts
+   - (Do not flag routine walking, standing, or uneventful transitions)
 
-5. **Group consecutive similar frames** into segments with a single description and a timestamp range (e.g., "00:02:15 - 00:02:45: Officer walks through parking lot toward building entrance, no other individuals visible").
+5. **Group frames aggressively** into segments. Consecutive frames showing the same activity become one segment with a timestamp range and a single sentence (e.g., "00:02:15 - 00:02:45: Officer walks through parking lot toward building entrance"). Never describe individual frames when they can be grouped.
 
 6. **For long videos, deliver a chapter summary to the user as each chapter completes** so they see progressive results. Format:
    > **Chapter 3 (04:00 - 06:00):** Brief summary of events in this chapter. Key moments: [list if any].
 
 ### Step 6: Generate the Report
 
-Save the full report as `$OUTPUT_DIR/forensic_report.md` with these sections:
+Save the full report as `$OUTPUT_DIR/forensic_report.md` with these sections.
+
+**Hard length constraint**: The final report MUST NOT exceed 500 lines total. Prioritize critical and notable events. Omit routine observations to stay within this limit. Use bullet points and concise table rows (1-2 sentences max per cell). If the compiled chapter analyses exceed the limit, summarize further — do not simply concatenate.
 
 #### Video Summary
 - File name, duration, resolution (if available from metadata)
@@ -166,40 +177,19 @@ Example:
 ```
 
 #### Key Moments
-Detailed analysis of each flagged critical frame:
-- Timestamp and frame reference (file name)
-- Full description of what is visible
-- Why it was flagged
-- Context from surrounding frames
+One table row per flagged moment. Columns: Timestamp | Frame ref | Description (1-2 sentences) | Why flagged (1 sentence). Do not add multi-paragraph narratives — the table is the analysis.
 
 #### Individuals Observed
-For each distinct person visible in the footage:
-- Physical description (clothing, build, distinguishing features visible)
-- First appearance timestamp
-- Last appearance timestamp
-- Role if identifiable (officer, civilian, witness, suspect, etc.)
-- Key actions taken
+One bullet per person. Format: `**Label** (role if known) — clothing/features, first seen HH:MM:SS, last seen HH:MM:SS. Key actions: [1-2 sentences].` Do not write a paragraph per individual.
 
 #### Evidence Notes
-Any items, documents, weapons, contraband, or evidence visible:
-- What it is
-- When it first appears
-- Who handles it
-- Chain of custody observations (who touched it, was it bagged/tagged)
+One bullet per evidence item. Format: `**Item** — first seen HH:MM:SS, handled by [label], custody notes (1 sentence).` Only include items actually observed; do not pad this section.
 
 #### Scene Changes
-Summary of major transitions:
-- Location changes
-- Camera perspective shifts
-- Lighting changes
-- Time gaps (if timestamps jump)
+Bullet list of major transitions only. Format: `HH:MM:SS — [what changed] (1 sentence)`. Omit minor/routine transitions.
 
 #### Gaps or Concerns
-- Video quality issues (blur, compression artifacts, low resolution)
-- Obstructed views (hand over lens, camera pointed at ground)
-- Dark or unlit periods where nothing is discernible
-- Missing time gaps (timestamp jumps suggesting cuts or pauses)
-- Audio references if overlay text mentions audio events not visible in frames
+Bullet list only. One bullet per issue: quality problems, obstructed views, dark periods, timestamp gaps, or audio-only references. Skip this section entirely if there are no concerns.
 
 ### Step 7: Present Results
 
@@ -225,6 +215,13 @@ Summary of major transitions:
 - Never fabricate legal citations — all case law → `[VERIFY]`, unknown authority → `[CASE LAW RESEARCH NEEDED]`
 - Never assume facts not in source material — missing info → `[NEEDS INVESTIGATION]`
 - Quote exactly when comparing documents — label analysis vs. facts distinctly
+
+**Anti-bloat rules** (include in ALL subagent prompts):
+- Max 100 lines per chapter analysis. If you exceed this, you have failed the task.
+- Do NOT add a title page, case header, or section-group heading. Start directly with the chapter heading.
+- Use bullet points, not multi-paragraph narratives. Table cells: 1-2 sentences max.
+- Omit routine/unremarkable frames entirely. Only describe segments where something notable happens or changes.
+- Group aggressively. If 20 frames show the same hallway walk, that is one bullet point, not 20.
 
 **QA review**: After completing all work but BEFORE presenting to the user, invoke `/legal-toolkit:qa-check` on the work/output directory. Do not skip this step.
 

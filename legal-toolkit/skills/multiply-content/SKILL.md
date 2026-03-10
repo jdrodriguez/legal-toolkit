@@ -27,14 +27,22 @@ This skill produces 12+ derivative pieces across 4 platforms. To avoid context w
    - Run `mkdir -p "$WORK_DIR/outputs"`.
 3. **Launch 4 subagents in parallel** (Agent tool, `subagent_type: "general-purpose"`):
 
-| Agent | Platform | Output File |
-|-------|----------|-------------|
-| 1 | Social Media Posts (5: 3 FB/IG + 1 LinkedIn + 1 X) | `$WORK_DIR/outputs/social_media.md` |
-| 2 | Email Newsletter Snippets (3) | `$WORK_DIR/outputs/email_snippets.md` |
-| 3 | Google Business Profile Posts (3) | `$WORK_DIR/outputs/gbp_posts.md` |
-| 4 | Short-Form Video Script (1) | `$WORK_DIR/outputs/video_script.md` |
+| Agent | Platform | Output File | Max Length |
+|-------|----------|-------------|------------|
+| 1 | Social Media Posts (5: 3 FB/IG + 1 LinkedIn + 1 X) | `$WORK_DIR/outputs/social_media.md` | 80 lines |
+| 2 | Email Newsletter Snippets (3) | `$WORK_DIR/outputs/email_snippets.md` | 60 lines |
+| 3 | Google Business Profile Posts (3) | `$WORK_DIR/outputs/gbp_posts.md` | 50 lines |
+| 4 | Short-Form Video Script (1) | `$WORK_DIR/outputs/video_script.md` | 50 lines |
 
-4. **Include in each agent's prompt**: Copy the relevant platform format specifications from Step 3 below. Also include: "Read `$WORK_DIR/source_content.md` for source material and `$WORK_DIR/voice_profile.md` for voice guidelines. Voice match is non-negotiable — every output must sound like the firm wrote it. Write output to `{output_file}`."
+4. **Include in each agent's prompt**: Copy the relevant platform format specifications from Step 3 below. Also include the following verbatim in every subagent prompt:
+
+   > Read `$WORK_DIR/source_content.md` for source material and `$WORK_DIR/voice_profile.md` for voice guidelines. Voice match is non-negotiable — every output must sound like the firm wrote it. Write output to `{output_file}`.
+   >
+   > **Output rules (hard constraints):**
+   > - Do NOT add a title page, platform header, or section-group heading. Start directly with the first content piece heading (e.g., "## Facebook/Instagram Post 1 -- The Hook"). The orchestrator will assemble all pieces.
+   > - Stay within {max_length} lines. Follow the word counts specified in the platform format specs exactly — do not exceed them.
+   > - Do not repeat the firm name, practice area, or source content summary in every piece. State them once at most; after that, vary your references.
+   > - No preamble, no "Here are the outputs," no sign-off. Content only.
 5. **Collect and present**: Read all output files, present organized by platform. Ask for refinement per Step 4.
 
 ## Step 1: Detect Input Type and Extract Source Content
@@ -196,6 +204,7 @@ Present all outputs organized by platform. After each section, ask:
 - **Voice match is non-negotiable.** Every output must sound like the firm wrote it. If the firm is conversational and punchy, the outputs must be conversational and punchy. If the firm is authoritative and measured, match that. Generic legal marketing language ("experienced legal team," "aggressive representation") is unacceptable unless the firm actually uses those phrases.
 - **Platform-native, not copy-paste.** Each output must feel native to its platform. An Instagram post reads differently from a LinkedIn post reads differently from an email. Adapt substance, tone, and length for each format.
 - **Substance over filler.** Every sentence should inform, reassure, or move the reader toward action. No padding. No sentences that could apply to any law firm.
+- **Word counts are hard limits.** The per-piece word counts in Step 3 (e.g., 150-250 words for FB/IG Post 1, under 280 characters for X) are ceilings, not suggestions. Exceeding them degrades platform performance and wastes reviewer time. Subagents that exceed the specified word count will have their output rejected.
 - **Accurate to source.** Do not add legal claims, statistics, or case outcomes not present in the source content or voice profile. If the source says "we've handled hundreds of cases," do not inflate to "thousands."
 - **CTAs match the firm.** Use the firm's actual phone numbers, consultation language, and offer framing. If the firm says "FREE strategy session," use that exact phrase -- not "free consultation" or "complimentary review."
 

@@ -24,13 +24,33 @@ For long depositions, the transcript analysis and .docx generation can exceed a 
 - **Transcript under 500 lines**: Analyze directly — no delegation needed.
 - **Transcript over 500 lines**: After the indexer completes (Step 4), delegate transcript analysis to subagents.
 
+### Output Limits
+
+- **Max lines per subagent output**: 60 lines. Subagents that exceed this are producing bloat.
+- **Format preference**: Tables and bullet points. No multi-paragraph prose.
+- **No duplication**: Subagents must not repeat metadata, context, or instructions the orchestrator already has.
+
 ### Orchestrator Workflow (When Delegating)
 
 1. **You handle**: Steps 1-4 (validate, check deps, warn, run indexer). Also handle Steps 5-6 (present summary and key moments from the JSON outputs — these are compact).
 2. **Check transcript size**: `wc -l < "$OUTPUT_DIR/transcript.txt"`. If over 500 lines, delegate.
-3. **Split and delegate**: Divide `transcript.txt` into ~500-line sections. Launch one subagent per section (Agent tool, `subagent_type: "general-purpose"`). Run `mkdir -p "$OUTPUT_DIR/analysis"` first. Each agent's prompt:
-   > "Read lines {start} to {end} of `{resolved_OUTPUT_DIR}/transcript.txt` (use the Read tool with offset and limit). Write your analysis to `{resolved_OUTPUT_DIR}/analysis/section_{N}.md` with: section summary (2-3 paragraphs), key topics, notable testimony quotes with timestamps, and any contradictions or admissions detected."
-4. **Synthesize**: After all agents complete, read the section analysis files. Combine into a unified deposition analysis: executive summary, consolidated key topics, all notable quotes, and overall testimony assessment.
+3. **Split and delegate**: Divide `transcript.txt` into ~500-line sections. Launch one subagent per section (Agent tool, `subagent_type: "general-purpose"`). Run `mkdir -p "$OUTPUT_DIR/analysis"` first. Each agent's prompt must include these exact rules:
+
+   > Read lines {start} to {end} of `{resolved_OUTPUT_DIR}/transcript.txt` (use the Read tool with offset and limit). Write your analysis to `{resolved_OUTPUT_DIR}/analysis/section_{N}.md`.
+   >
+   > **Rules — follow exactly:**
+   > - Do NOT add a title page or section-group heading. Start directly with your chunk's content. The orchestrator will assemble the full index.
+   > - Stay within 60 lines. Be concise — use tables and bullet points, not multi-paragraph summaries.
+   > - Do not repeat metadata or context that the orchestrator already has (file paths, deposition details, processing info).
+   > - Every factual claim must cite a source line or timestamp — unsourced claims are prohibited.
+   >
+   > **Required sections (use these exact headings):**
+   > - `## Summary` — 2-3 sentences max. What happened in this segment.
+   > - `## Key Topics` — Bulleted list, one line each.
+   > - `## Notable Testimony` — Table with columns: Timestamp | Speaker | Quote | Significance. Max 5 rows.
+   > - `## Contradictions / Admissions` — Bulleted list. Omit section if none found.
+
+4. **Synthesize**: After all agents complete, read the section analysis files. Combine into a unified deposition analysis: executive summary (one paragraph), consolidated key topics (bulleted), all notable quotes (single table), and overall testimony assessment (2-3 sentences).
 5. **Continue to Step 7**: Present the timeline and outputs. Use the synthesized analysis for the .docx generation in Step 8.
 
 ## Process
