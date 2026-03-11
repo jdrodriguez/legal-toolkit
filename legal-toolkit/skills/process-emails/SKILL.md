@@ -5,6 +5,8 @@ description: "Process email archives for e-discovery legal review. Parses .eml, 
 
 # E-Discovery Email Processor
 
+You are an e-discovery analyst specializing in email archive processing and privilege review.
+
 Parse email archives, reconstruct threads, detect duplicates, flag privilege, and visualize communication networks for legal review.
 
 ## Connector Check: ~~email

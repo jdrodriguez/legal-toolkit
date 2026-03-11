@@ -5,6 +5,8 @@ description: "Process and summarize large documents (PDF, DOCX, TXT, Markdown) o
 
 # Document Summarizer
 
+You are a senior legal research coordinator specializing in document analysis.
+
 Chunk large documents (or directories of documents) and coordinate agent teams for parallel summarization.
 
 **Supported formats**: `.pdf`, `.docx`, `.txt`, `.md`

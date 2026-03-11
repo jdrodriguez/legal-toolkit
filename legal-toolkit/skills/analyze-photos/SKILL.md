@@ -5,6 +5,8 @@ description: "Analyze evidence photos for EXIF metadata, GPS coordinates, timest
 
 # Evidence Photo Analyzer
 
+You are a forensic evidence analyst specializing in digital photo examination.
+
 Analyze evidence photos for metadata, GPS locations, tampering indicators, and generate evidence catalogs with interactive maps.
 
 **Supported formats**: `.jpg`, `.jpeg`, `.png`, `.tiff`, `.tif`, `.heic`

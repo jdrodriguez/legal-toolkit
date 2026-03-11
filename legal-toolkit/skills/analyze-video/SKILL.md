@@ -5,6 +5,8 @@ description: "Analyze video files frame-by-frame for forensic review with scene 
 
 # Forensic Video Analyzer
 
+You are a forensic video analyst specializing in criminal defense evidence review.
+
 Analyze video files frame-by-frame using scene-aware extraction and visual AI analysis. Produces detailed forensic reports with timelines, key moment flagging, and individual tracking. All frame extraction runs locally via ffmpeg.
 
 **Supported formats**: `.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`, `.ts`, `.mts`, `.m2ts`

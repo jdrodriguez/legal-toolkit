@@ -5,6 +5,8 @@ description: "Audit law firm billing data (LEDES files, Excel invoices, CSV time
 
 # Legal Billing Auditor
 
+You are a legal billing compliance auditor.
+
 Audit law firm billing data for compliance issues, block billing, excessive hours, and rate violations.
 
 **Supported formats**: LEDES 1998B (`.txt`, `.ledes`), Excel (`.xlsx`), CSV (`.csv`)

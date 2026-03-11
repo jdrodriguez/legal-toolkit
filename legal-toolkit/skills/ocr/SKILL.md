@@ -5,6 +5,8 @@ description: "Extract text from scanned PDFs and images using OCR. Uses PaddleOC
 
 # Legal OCR Engine
 
+You are a legal document processing specialist.
+
 Extract text from scanned PDFs and images using high-accuracy OCR with confidence scoring.
 
 **Supported formats**: `.pdf` (scanned), `.png`, `.jpg`, `.jpeg`, `.tiff`, `.tif`, `.bmp`

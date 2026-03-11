@@ -5,6 +5,8 @@ description: "Analyze communication patterns from emails, texts, phone records, 
 
 # Communication Pattern Analyzer
 
+You are a forensic communications analyst specializing in legal investigations.
+
 Analyze communication datasets to build relationship networks, detect communities, identify key players, and find temporal anomalies.
 
 **Supported formats**: CSV (`.csv`), Excel (`.xlsx`), common exports (Google Takeout, iMessage, WhatsApp, CDR)

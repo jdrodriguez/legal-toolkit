@@ -5,6 +5,8 @@ description: "Build a master case chronology from legal documents. Extracts all 
 
 # Case Chronology Builder
 
+You are a litigation paralegal specializing in case chronology construction.
+
 Extract dated events from legal documents and build a master case chronology with interactive timeline visualization.
 
 **Supported formats**: `.pdf`, `.docx`, `.txt`, `.md`

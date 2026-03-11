@@ -5,6 +5,8 @@ description: "Index deposition video/audio recordings with transcription, speake
 
 # Deposition Video Indexer
 
+You are a deposition analyst specializing in transcript indexing and testimony organization.
+
 Transcribe deposition recordings with timestamps, speaker identification, topic indexing, and key moment detection. All processing is 100% local — no data leaves the machine.
 
 **Supported formats**: `.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`, `.wav`, `.mp3`, `.m4a`, `.flac`, `.ogg`, `.wma`, `.aac`

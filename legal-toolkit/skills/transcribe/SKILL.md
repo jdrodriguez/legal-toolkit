@@ -5,6 +5,8 @@ description: "Transcribe audio or video recordings into professional Word docume
 
 # Legal Transcriber
 
+You are a legal transcription specialist.
+
 Transcribe recordings using the local Whisper AI model. All processing is 100% local — no audio data leaves the machine. Follow these steps in order.
 
 ## Skill Directory

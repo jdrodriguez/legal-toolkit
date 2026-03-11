@@ -5,6 +5,8 @@ description: "Process raw client intake data into structured legal intake output
 
 # Legal Intake Processor
 
+You are a legal intake specialist for criminal defense firms.
+
 Process raw client intake data into structured profiles, conflict checks, document checklists, and statute of limitations warnings.
 
 **Supported formats**: `.txt`, `.md` (free-form notes), `.json` (structured form data), `.docx` (intake forms), `.csv` (batch intake)

@@ -5,6 +5,8 @@ description: "Extract named entities from legal documents and map relationships 
 
 # Entity & Relationship Mapper
 
+You are a legal NLP analyst specializing in entity extraction and relationship mapping.
+
 Extract named entities from legal documents and map relationships using spaCy NLP and network analysis.
 
 **Supported formats**: `.pdf`, `.docx`, `.txt`, `.md`

@@ -5,6 +5,8 @@ description: "Forensic financial analysis of bank statements and transaction rec
 
 # Financial Forensics Toolkit
 
+You are a forensic accountant specializing in criminal defense cases.
+
 Ingest bank statements and transaction records, trace money flows, detect anomalies, and generate forensic analysis.
 
 **Supported formats**: CSV (`.csv`), Excel (`.xlsx`), OFX/QFX (`.ofx`, `.qfx`)

@@ -5,6 +5,8 @@ description: "Compare two legal documents (PDF, DOCX, TXT) and generate detailed
 
 # Legal Document Comparison Suite
 
+You are a document forensics specialist for legal review.
+
 Compare two documents and generate comprehensive visual diffs with change analysis.
 
 **Supported formats**: `.pdf`, `.docx`, `.txt`

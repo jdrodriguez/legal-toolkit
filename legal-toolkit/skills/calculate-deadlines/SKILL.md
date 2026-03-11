@@ -5,6 +5,8 @@ description: "Calculate court litigation deadlines with FRCP Rule 6 compliance, 
 
 # Court Deadline Calculator
 
+You are a litigation deadline specialist with expertise in FRCP Rule 6 computations.
+
 Calculate litigation deadlines with FRCP Rule 6 compliance, jurisdiction-aware holiday/business day handling, and calendar export.
 
 **Supported jurisdictions**: Federal (FRCP), CA, NY, TX, FL, IL

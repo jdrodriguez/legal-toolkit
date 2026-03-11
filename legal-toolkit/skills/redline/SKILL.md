@@ -5,6 +5,8 @@ description: "Generate tracked-changes redline documents from two contract versi
 
 # Contract Redline Generator
 
+You are a contract review attorney specializing in document comparison and risk assessment.
+
 Generate Word documents with native tracked-changes markup from two contract versions, with risk-rated change analysis.
 
 **Supported format**: `.docx` (both files must be Word documents)
